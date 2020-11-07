@@ -2,6 +2,8 @@ import React from "react";
 import io from "socket.io-client";
 // import axios from "axios";
 import Form from "./components/Form/Form.js";
+import Messages from "./components/Messages/Messages.js";
+
 
 function App() {
   // SOCKET STUFF
@@ -19,6 +21,7 @@ function App() {
   return (
     <div className="App">
       <p>I am a message on the front end :D </p>
+      <Messages />
       <Form />
     </div>
   );

@@ -22,9 +22,10 @@ io.on("connection", (socket) => {
   // Broadcast when a user connects
   socket.broadcast.emit("message", "A user has joined the chat");
 
-  // when client submits a message from form
+  // EVENT HANDLER: 1) When client submits a message from form
   socket.on("client_message", (message) => {
     console.log("from server:", message);
+    io.emit("server_message", message);
   });
 
   // Runs when client disconnects - this must be inside the connection event
