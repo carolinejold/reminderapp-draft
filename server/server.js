@@ -11,22 +11,26 @@ const cors = require("cors");
 app.use(cors());
 
 // ROUTES
-app.get("/", (req, res) => {
-  res.send({ message: "I AM A MESSAGE FROM EXPRESS" });
-});
+// app.get("/", (req, res) => {
+//   res.send({ message: "I AM A MESSAGE FROM EXPRESS" });
+// });
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connection", (socket) => {
   // Welcome current user
-  socket.emit("message", "welcome to the chatroom wooo!!");
-
+  socket.emit("welcome", "welcome to the chatroom wooo!!");
   // Broadcast when a user connects
   socket.broadcast.emit("message", "A user has joined the chat");
 
+  // when client submits a message from form
+  socket.on("client_message", (message) => {
+    console.log("from server:", message);
+  });
+
   // Runs when client disconnects - this must be inside the connection event
-  socket.on("disconnect", () => {
+  io.on("disconnect", (socket) => {
     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-    io.emit("message", "A user has left the chat");
+    socket.broadcast.emit("message", "A user has left the chat");
   });
 });
 

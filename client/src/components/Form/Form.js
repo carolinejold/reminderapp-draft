@@ -3,43 +3,23 @@
 // https://stackoverflow.com/questions/61986655/react-hooks-how-to-make-a-post-request-to-server
 
 import React, { useState } from "react";
-import axios from "axios";
+import io from "socket.io-client";
+const socket = io();
 
 const Form = () => {
   const [task, setTask] = useState(""); // TODO: try to change these into array of objects rather than separate states. [{title: 'something', desc: 'something'}]
 
-  const sendTask = async (task) => {
-    axios({
-      method: "post",
-      url: `http://localhost:5000/`,
-      data: task,
-      headers: {
-        "content-type": "application/json",
-      },
-    }).then((res) => {
-      console.log("inside sendtask", task);
-      console.log("SENDTASK RES", res);
-      console.log("SENDTASK RESDATA", res.data).catch((err) => {
-        console.log(err);
-      });
-    });
-  };
-
-  // try {
-  //   let res = await axios.post(`http://localhost:5000/`, task);
-  //   console.log("inside sendtask", task);
-  //   console.log("SENDTASK RES", res);
-  //   console.log("SENDTASK RESDATA", res.data);
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  //   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(task);
-    if (!task) return; // TODO error handling
-    sendTask(task); // Send task to express backend when form is submitted
+    // TODO error handling
+    console.log("task before submitted:", task);
+    // Send task to express backend when form is submitted
+    socket.emit("client_message", task);
+    // socket.emit("submit-message", (task) => {
+    //   // Welcome current user
+    //   console.log(task);
+    //    // socket.emit('new_message', { id: socket.id, message: messageInput });
+    // });
   };
 
   const onChange = (e) => {
