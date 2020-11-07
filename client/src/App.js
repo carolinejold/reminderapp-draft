@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
+import Form from "./components/Form/Form.js";
 
 function App() {
   const [hello, setHello] = useState("");
@@ -17,7 +18,11 @@ function App() {
 
   // SOCKET STUFF
   // Opens the connection between client and server
-  const socket = io();
+
+  const socket = io("http://localhost:5000", {
+    upgrade: false,
+    transports: ["websocket"],
+  });
 
   // Socket events
   socket.on("message", (message) => {
@@ -28,6 +33,7 @@ function App() {
     <div className="App">
       {hello}
       <p>I am a message on the front end :D </p>
+      <Form />
     </div>
   );
 }
