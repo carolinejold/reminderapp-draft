@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  const [hello, setHello] = useState("");
+
+  useEffect(() => {
+    async function fetchData() {
+      let response = await axios(`http://localhost:5000/`);
+      let result = await response.data.message;
+      setHello(result);
+      console.log(result);
+    }
+    fetchData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {hello}
+      <p>I am a message on the front end :D </p>
     </div>
   );
 }
