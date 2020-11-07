@@ -1,20 +1,35 @@
 const express = require("express");
-const app = express();
-const port = 5000; // process.env.PORT ||
-const cors = require("cors");
+const http = require("http");
+const socketio = require("socket.io");
 
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
+
+// CORS
+const cors = require("cors");
 app.use(cors());
 
+// ROUTES
 app.get("/", (req, res) => {
   res.send({ message: "I AM A MESSAGE FROM EXPRESS" });
 });
 
-app.listen(port, () => console.log(`Server live on port ${port}`));
+// SOCKET.IO - WHEN CLIENT CONNECTS
+io.on("connection", (socket) => {
+  // Welcome current user
+  socket.emit("message", "welcome to the chatroom wooo!!");
 
-// const io = require('socket.io')();
+  // Broadcast when a user connects
+  socket.broadcast.emit("message", "A user has joined the chat");
 
-// io.on('connection', (client) => {
-//   // here you can start emitting events to the client
-// });
+  // Runs when client disconnects - this must be inside the connection event
+  socket.on("disconnect", () => {
+    // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
+    io.emit("message", "A user has left the chat");
+  });
+});
 
-// io.listen(port);
+// PORT
+const port = 5000 || process.env.PORT;
+server.listen(port, () => console.log(`Server running on port ${port}`));

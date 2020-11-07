@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import axios from "axios";
 
 function App() {
@@ -13,6 +14,15 @@ function App() {
     }
     fetchData();
   }, []);
+
+  // SOCKET STUFF
+  // Opens the connection between client and server
+  const socket = io();
+
+  // Socket events
+  socket.on("message", (message) => {
+    console.log(message);
+  });
 
   return (
     <div className="App">
