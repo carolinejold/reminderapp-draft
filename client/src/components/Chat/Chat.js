@@ -24,6 +24,7 @@ const Chat = () => {
 
     setRoom(room);
     setName(name);
+    console.log("NAME AND ROOM STATE", name, room);
 
     socket.emit("join", { name, room }, (err) => {
       if (err) {
@@ -57,7 +58,9 @@ const Chat = () => {
     <div>
       <h1>Family Reminders App</h1>
       <p>{welcomeMessage}</p>
-      <p>Welcome to the {room} list, {name}!</p>
+      <p>
+        Welcome to the {room} list, {name}!
+      </p>
       <p>{disconnectMessage}</p>
       <Form name={name} />
       <Messages name={name} />
