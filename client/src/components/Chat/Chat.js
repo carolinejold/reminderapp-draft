@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router";
+// import { Redirect } from "react-router";
 import io from "socket.io-client";
 import queryString from "query-string";
 import Form from "../Form/Form.js";
@@ -11,37 +11,29 @@ const Chat = () => {
   const [disconnectMessage, setDisconnectMessage] = useState("");
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
-  const [flag, setFlag] = useState(0);
+  //   const [flag, setFlag] = useState(0);
 
   useEffect(() => {
-    const { name, room } = queryString.parse(window.location.search);
-
-    // Opens the connection between client and server
-    const socket = io(server, {
+    const socket = io(`http://localhost:5000`, {
       upgrade: false,
       transports: ["websocket"],
     });
+
+    const { name, room } = queryString.parse(window.location.search);
 
     setRoom(room);
     setName(name);
     console.log("NAME AND ROOM STATE", name, room);
 
-    socket.emit("join", { name, room }, (err) => {
-      if (err) {
-        setFlag(1);
-        alert(err);
-      }
-    });
-  }, [server, window.location.search]);
+    socket.emit("join_room", { name, room });
 
-  useEffect(() => {
-    const socket = io(server, {
-      upgrade: false,
-      transports: ["websocket"],
-    });
     // WELCOME EVENT RECEIVER: Receiving welcome event from server
     socket.on("welcome", (data) => {
       setWelcomeMessage(data);
+    });
+
+    socket.on("user-joined-chat", (data) => {
+      console.log("USER JOINED CHAT", data);
     });
 
     socket.on("user_left", (data) => {
@@ -50,17 +42,10 @@ const Chat = () => {
     });
   }, []);
 
-  if (flag) {
-    return <Redirect to="/" />;
-  }
-
   return (
     <div>
       <h1>Family Reminders App</h1>
       <p>{welcomeMessage}</p>
-      <p>
-        Welcome to the {room} list, {name}!
-      </p>
       <p>{disconnectMessage}</p>
       <Form name={name} />
       <Messages name={name} />
