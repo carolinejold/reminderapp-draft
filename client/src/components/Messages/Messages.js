@@ -7,6 +7,7 @@ const Messages = () => {
 
   useEffect(() => {
     const socket = io();
+    // EVENT RECEIVER: Receiving message event from server
     socket.on("server_message", (data) => {
       setReceivedMessage((receivedMessage) => [...receivedMessage, data]);
     });

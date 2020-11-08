@@ -15,11 +15,7 @@ const Form = () => {
     console.log("task before submitted:", task);
     // Send task to express backend when form is submitted
     socket.emit("client_message", task);
-    // socket.emit("submit-message", (task) => {
-    //   // Welcome current user
-    //   console.log(task);
-    //    // socket.emit('new_message', { id: socket.id, message: messageInput });
-    // });
+    setTask('');
   };
 
   const onChange = (e) => {
@@ -31,6 +27,7 @@ const Form = () => {
       <form onSubmit={handleSubmit}>
         <label>
           TASK:
+          <br></br>
           <input
             placeholder="what do you need to do?"
             type="text"

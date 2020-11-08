@@ -16,22 +16,22 @@ app.use(cors());
 // });
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
-io.on("connection", (socket) => {
+io.on("connect", (socket) => {
   // Welcome current user
-  socket.emit("welcome", "welcome to the chatroom wooo!!");
+  socket.emit("welcome", `Welcome to the family reminders app, ${socket.id}!`);
   // Broadcast when a user connects
   socket.broadcast.emit("message", "A user has joined the chat");
 
   // EVENT HANDLER: 1) When client submits a message from form
   socket.on("client_message", (message) => {
     console.log("from server:", message);
-    io.emit("server_message", message);
+    io.emit("server_message", { id: socket.id, message: message });
   });
 
   // Runs when client disconnects - this must be inside the connection event
   io.on("disconnect", (socket) => {
     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-    socket.broadcast.emit("message", "A user has left the chat");
+    socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
   });
 });
 
