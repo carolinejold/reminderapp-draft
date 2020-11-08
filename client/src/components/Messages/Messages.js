@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import Message from "./Message.js";
 
 const Messages = () => {
-  const [receivedMessageArr, setReceivedMessageArr] = useState([]);
+  const [messageArr, setMessageArr] = useState([]);
 
   useEffect(() => {
     const socket = io();
@@ -11,18 +11,18 @@ const Messages = () => {
     socket.on("server_message", (data) => {
       console.log(data);
       //   const add = receivedMessageArr.concat(data);
-      setReceivedMessageArr((receivedMessageArr) => [
-        ...receivedMessageArr,
+      setMessageArr((messageArr) => [
+        ...messageArr,
         data,
       ]);
     });
   }, []);
 
-  console.log("STATE IN MESSAGES", receivedMessageArr);
+  console.log("STATE IN MESSAGES", messageArr);
 
   return (
     <div>
-      <Message receivedMessageArr={receivedMessageArr} />
+      <Message messageArr={messageArr} />
     </div>
   );
 };
