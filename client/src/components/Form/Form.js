@@ -6,27 +6,29 @@ import React, { useState } from "react";
 import io from "socket.io-client";
 const socket = io();
 
-const Form = () => {
+const Form = ({ name }) => {
   const [task, setTask] = useState(""); // TODO: try to change these into array of objects rather than separate states. [{title: 'something', desc: 'something'}]
+  const [taskObj, setTaskObj] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO error handling
-    console.log("task before submitted:", task);
+    console.log("taskObj before submitted:", taskObj);
     // Send task to express backend when form is submitted
-    socket.emit("client_message", task);
+    socket.emit("client_message", taskObj);
     setTask('');
   };
 
   const onChange = (e) => {
     setTask(e.target.value);
+    setTaskObj({task: task, name: name})
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <label>
-          TASK:
+        {name}, add your task:
           <br></br>
           <input
             placeholder="what do you need to do?"

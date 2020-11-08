@@ -1,6 +1,6 @@
 import React from "react";
 
-const Message = ({ receivedMessage }) => {
+const Message = ({ receivedMessageArr }) => {
   const styles = {
     div: {
       textAlign: "center",
@@ -11,17 +11,17 @@ const Message = ({ receivedMessage }) => {
       maxWidth: "20em",
       maxHeight: "7em",
       overflowY: "scroll",
-      fontSize: '0.8em'
+      fontSize: "0.8em",
     },
   };
 
   return (
     <div>
-      {receivedMessage.map((el, i) => {
+      {receivedMessageArr.map((el, i) => {
         return (
           <div key={i} style={styles.div}>
-            <i>{el.id}</i>
-            <p>{el.message}</p>
+            <i>{el.name}</i>
+            <p>{el.task}</p>
           </div>
         );
       })}

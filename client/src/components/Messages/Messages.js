@@ -3,21 +3,26 @@ import io from "socket.io-client";
 import Message from "./Message.js";
 
 const Messages = () => {
-  const [receivedMessage, setReceivedMessage] = useState([]);
+  const [receivedMessageArr, setReceivedMessageArr] = useState([]);
 
   useEffect(() => {
     const socket = io();
     // EVENT RECEIVER: Receiving message event from server
     socket.on("server_message", (data) => {
-      setReceivedMessage((receivedMessage) => [...receivedMessage, data]);
+      console.log(data);
+      //   const add = receivedMessageArr.concat(data);
+      setReceivedMessageArr((receivedMessageArr) => [
+        ...receivedMessageArr,
+        data,
+      ]);
     });
   }, []);
 
-  console.log("STATE IN FRONTEND", receivedMessage);
+  console.log("STATE IN MESSAGES", receivedMessageArr);
 
   return (
     <div>
-      <Message receivedMessage={receivedMessage} />
+      <Message receivedMessageArr={receivedMessageArr} />
     </div>
   );
 };
