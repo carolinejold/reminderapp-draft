@@ -24,7 +24,6 @@ const Form = () => {
 
   const onChange = (e) => {
     setTask(e.target.value);
-    console.log("task:", task);
   };
 
   return (

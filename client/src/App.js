@@ -4,7 +4,6 @@ import io from "socket.io-client";
 import Form from "./components/Form/Form.js";
 import Messages from "./components/Messages/Messages.js";
 
-
 function App() {
   // SOCKET STUFF
   // Opens the connection between client and server
@@ -20,9 +19,9 @@ function App() {
 
   return (
     <div className="App">
-      <p>I am a message on the front end :D </p>
-      <Messages />
+      <h1>Family Reminders App</h1>
       <Form />
+      <Messages />
     </div>
   );
 }
