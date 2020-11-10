@@ -20,7 +20,7 @@ const users = [];
 const userJoin = (id, name, room) => {
   const user = { id, name, room };
   users.push(user);
-  console.log("USERS ARRAY 1", users);
+  console.log("users array, server", users);
   return user;
 };
 
@@ -36,21 +36,25 @@ io.on("connect", (socket) => {
   console.log("CONNECTED TO SERVER", socket.id);
 
   socket.on("new_user", ({ name, room }) => {
-    socket.emit("welcome_user", `Welcome to the ${room} list, ${name}!`);
-    socket.broadcast.emit("user_joined", `${name} joined the ${room} list!`); // set timeout on this
-  });
-
-  // EVENT HANDLER: 1) When client joins the room
-  socket.on("join_room", ({ name, room }) => {
     const user = userJoin(socket.id, name, room);
-    console.log("AFTER USERJOIN", user);
+    
+    console.log("User details, new_user, server", user);
     socket.join(user.room);
+    socket.emit(
+      "welcome_user",
+      `Welcome to the ${user.room} list, ${user.name}!`
+    );
+    socket.broadcast
+      .to(user.room)
+      .emit("user_joined", `${user.name} joined the ${user.room} list!`);
   });
 
-  io.on("disconnect", (socket) => {
-    // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-    socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
-  });
+
+  // EVENT HANDLER: When client disconnects
+  //   io.on("disconnect", (socket) => {
+  //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
+  //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
+  //   });
 });
 
 //   // Welcome current user

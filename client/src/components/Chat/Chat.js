@@ -23,7 +23,6 @@ const Chat = () => {
     // 2) Receive welcome_user event from server
     socket.on("welcome_user", (data) => {
       setWelcomeMessage(data);
-      socket.emit("join_room", { name, room });
     });
 
     // 2.5) Receive user_joined event from server
@@ -31,10 +30,7 @@ const Chat = () => {
       setUserJoinedMessage((userJoinedMessage) => [...userJoinedMessage, data]);
     });
 
-    // Receiving event to tell othr users there is a new user
-    // socket.on("user_joined", (data) => {
-    //   console.log("USER JOINED DATA", data);
-    // });
+
 
     // socket.on("user_left", (data) => {
     //   console.log("disconnect data", data);
