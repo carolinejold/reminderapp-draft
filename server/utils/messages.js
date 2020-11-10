@@ -5,7 +5,7 @@ const formatMessage = (id, name, task) => {
     id,
     name,
     task,
-    time: moment().format("h:mm a"),
+    date: moment().format("YYYY-MM-DD HH:mm")
   };
 };
 

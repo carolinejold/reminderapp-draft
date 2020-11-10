@@ -49,11 +49,12 @@ io.on("connect", (socket) => {
       .emit("user_joined", `${user.name} joined the ${user.room} list!`);
   });
 
-  socket.on("client_message", (task) => {
-    console.log("users, inside client message", users);
-    const user = users.find((user) => user.id === socket.id);
-    console.log("current user, inside client_message", user);
-    io.to(user.room).emit("server_message", formatMessage(user.id, user.name, task));
+  socket.on("client_message", async (task) => {
+    const user = await users.find((user) => user.id === socket.id);
+    io.to(user.room).emit(
+      "server_message",
+      formatMessage(user.id, user.name, task)
+    );
   });
 
   // EVENT HANDLER: When client disconnects

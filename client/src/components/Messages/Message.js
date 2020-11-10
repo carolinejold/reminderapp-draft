@@ -22,6 +22,7 @@ const Message = ({ messageArr }) => {
           <div key={i} style={styles.div}>
             <i>{el.name}</i>
             <p>{el.task}</p>
+            <p>{el.date}</p>
           </div>
         );
       })}
