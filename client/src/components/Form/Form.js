@@ -11,9 +11,7 @@ const Form = ({ name, room }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO error handling
     console.log("FORM.js - task before submitted:", task);
-    // Send task to express backend when form is submitted
     socket.emit("client_message", task);
     setInputValue("");
   };

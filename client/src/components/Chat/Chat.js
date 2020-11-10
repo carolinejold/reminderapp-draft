@@ -6,7 +6,7 @@ import { socket } from "../sockets/sockets.js";
 
 const Chat = () => {
   const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [userJoinedMessage, setUserJoinedMessage] = useState("");
+  const [userJoinedMessage, setUserJoinedMessage] = useState([]);
   // const [userList, setUserList] = useState([]);
   // const [disconnectMessage, setDisconnectMessage] = useState("");
   const [name, setName] = useState("");
@@ -30,8 +30,6 @@ const Chat = () => {
       setUserJoinedMessage((userJoinedMessage) => [...userJoinedMessage, data]);
     });
 
-
-
     // socket.on("user_left", (data) => {
     //   console.log("disconnect data", data);
     //   setDisconnectMessage(data);
@@ -41,7 +39,12 @@ const Chat = () => {
     <div>
       <h1>Family Reminders App</h1>
       <p>{welcomeMessage}</p>
-      <p>{userJoinedMessage}</p>
+      <div>
+        {userJoinedMessage.map((el) => (
+          <p key={el}>{el}</p>
+        ))}
+      </div>
+
       {/* <p>{disconnectMessage}</p> */}
       <Form name={name} room={room} />
       <Messages name={name} />

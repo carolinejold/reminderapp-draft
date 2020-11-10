@@ -37,7 +37,7 @@ io.on("connect", (socket) => {
 
   socket.on("new_user", ({ name, room }) => {
     const user = userJoin(socket.id, name, room);
-    
+
     console.log("User details, new_user, server", user);
     socket.join(user.room);
     socket.emit(
@@ -49,6 +49,12 @@ io.on("connect", (socket) => {
       .emit("user_joined", `${user.name} joined the ${user.room} list!`);
   });
 
+  socket.on("client_message", (task) => {
+    console.log("users, inside client message", users);
+    const user = users.find((user) => user.id === socket.id);
+    console.log("current user, inside client_message", user);
+    io.to(user.room).emit("server_message", formatMessage(user.id, user.name, task));
+  });
 
   // EVENT HANDLER: When client disconnects
   //   io.on("disconnect", (socket) => {
@@ -56,15 +62,6 @@ io.on("connect", (socket) => {
   //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
   //   });
 });
-
-//   // Welcome current user
-//   socket.emit("welcome", `Welcome to the ${user.room} list, ${user.name}!`);
-
-//   // Broadcast when a user connects
-//   socket.broadcast
-//     .to(user.room)
-//     .emit("user-joined-chat", `${user.name} has joined the chat`);
-// });
 
 // EVENT HANDLER: 2) When client submits a message from form
 // socket.on("client_message", (message) => {

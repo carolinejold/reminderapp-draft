@@ -5,16 +5,12 @@ import Message from "./Message.js";
 const Messages = () => {
   const [messageArr, setMessageArr] = useState([]);
 
-  // useEffect(() => {
-  //   // EVENT RECEIVER: Receiving message event from server
-  //   // socket.on("server_message", (data) => {
-  //   //   console.log("server message event received on frontend", data);
-  //   //   //   const add = receivedMessageArr.concat(data);
-  //   //   setMessageArr((messageArr) => [...messageArr, data]);
-  //   // });
-  // }, []);
-
-  // console.log("STATE IN MESSAGES", messageArr);
+  useEffect(() => {
+    socket.on("server_message", (data) => {
+      console.log("server message event received on frontend", data);
+      setMessageArr((messageArr) => [...messageArr, data]);
+    });
+  }, []);
 
   return (
     <div>
