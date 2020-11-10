@@ -1,53 +1,53 @@
 import React, { useState, useEffect } from "react";
-// import { Redirect } from "react-router";
-import io from "socket.io-client";
 import queryString from "query-string";
 import Form from "../Form/Form.js";
 import Messages from "../Messages/Messages.js";
-const server = "http://localhost:5000";
+import { socket } from "../sockets/sockets.js";
 
 const Chat = () => {
   const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [disconnectMessage, setDisconnectMessage] = useState("");
+  const [userJoinedMessage, setUserJoinedMessage] = useState("");
+  // const [userList, setUserList] = useState([]);
+  // const [disconnectMessage, setDisconnectMessage] = useState("");
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
-  //   const [flag, setFlag] = useState(0);
 
   useEffect(() => {
-    const socket = io(`http://localhost:5000`, {
-      upgrade: false,
-      transports: ["websocket"],
-    });
-
     const { name, room } = queryString.parse(window.location.search);
-
     setRoom(room);
     setName(name);
-    console.log("NAME AND ROOM STATE", name, room);
 
-    socket.emit("join_room", { name, room });
+    // 1) Emit new user event on connection from server
+    socket.emit("new_user", { name, room });
 
-    // WELCOME EVENT RECEIVER: Receiving welcome event from server
-    socket.on("welcome", (data) => {
+    // 2) Receive welcome_user event from server
+    socket.on("welcome_user", (data) => {
       setWelcomeMessage(data);
+      socket.emit("join_room", { name, room });
     });
 
-    socket.on("user-joined-chat", (data) => {
-      console.log("USER JOINED CHAT", data);
+    // 2.5) Receive user_joined event from server
+    socket.on("user_joined", (data) => {
+      setUserJoinedMessage((userJoinedMessage) => [...userJoinedMessage, data]);
     });
 
-    socket.on("user_left", (data) => {
-      console.log("disconnect data", data);
-      setDisconnectMessage(data);
-    });
+    // Receiving event to tell othr users there is a new user
+    // socket.on("user_joined", (data) => {
+    //   console.log("USER JOINED DATA", data);
+    // });
+
+    // socket.on("user_left", (data) => {
+    //   console.log("disconnect data", data);
+    //   setDisconnectMessage(data);
   }, []);
 
   return (
     <div>
       <h1>Family Reminders App</h1>
       <p>{welcomeMessage}</p>
-      <p>{disconnectMessage}</p>
-      <Form name={name} />
+      <p>{userJoinedMessage}</p>
+      {/* <p>{disconnectMessage}</p> */}
+      <Form name={name} room={room} />
       <Messages name={name} />
     </div>
   );

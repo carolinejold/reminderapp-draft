@@ -3,25 +3,24 @@
 // https://stackoverflow.com/questions/61986655/react-hooks-how-to-make-a-post-request-to-server
 
 import React, { useState } from "react";
-import io from "socket.io-client";
-const socket = io();
+import { socket } from "../sockets/sockets.js";
 
-const Form = ({ name }) => {
+const Form = ({ name, room }) => {
   const [inputValue, setInputValue] = useState(""); // TODO: try to change these into array of objects rather than separate states. [{title: 'something', desc: 'something'}]
-  const [taskObj, setTaskObj] = useState("");
+  const [task, setTask] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO error handling
-    console.log("taskObj before submitted:", taskObj);
+    console.log("taskObj before submitted:", task);
     // Send task to express backend when form is submitted
-    socket.emit("client_message", taskObj);
+    // socket.emit("client_message", task);
     setInputValue("");
   };
 
   const onChange = (e) => {
     setInputValue(e.target.value);
-    setTaskObj({ task: e.target.value, name: name });
+    setTask(e.target.value);
   };
 
   return (
