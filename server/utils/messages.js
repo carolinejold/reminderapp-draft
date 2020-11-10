@@ -1,11 +1,16 @@
+const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-const formatMessage = (id, name, task) => {
+console.log(uuidv4());
+const formatMessage = (user_id, name, task) => {
   return {
-    id,
+    user_id,
+    message_id: uuidv4(),
     name,
     task,
-    date: moment().format("YYYY-MM-DD HH:mm")
+    date: moment().format("DD-MM-YYYY"),
+    time: moment().format("HH:mm"),
+    completed: false,
   };
 };
 

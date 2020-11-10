@@ -17,10 +17,9 @@ app.use(cors());
 const users = [];
 
 // Join user to chat
-const userJoin = (id, name, room) => {
-  const user = { id, name, room };
+const userJoin = (user_id, name, room) => {
+  const user = { user_id, name, room };
   users.push(user);
-  console.log("users array, server", users);
   return user;
 };
 
@@ -50,19 +49,23 @@ io.on("connect", (socket) => {
   });
 
   socket.on("client_message", async (task) => {
-    const user = await users.find((user) => user.id === socket.id);
+    const user = await users.find((user) => user.user_id === socket.id);
     io.to(user.room).emit(
       "server_message",
-      formatMessage(user.id, user.name, task)
+      formatMessage(user.user_id, user.name, task)
     );
   });
 
-  // EVENT HANDLER: When client disconnects
-  //   io.on("disconnect", (socket) => {
-  //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-  //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
-  //   });
+  socket.on("toggle_task", (taskArr) => {
+    io.emit("toggled_task", taskArr);
+  });
 });
+
+// EVENT HANDLER: When client disconnects
+//   io.on("disconnect", (socket) => {
+//     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
+//     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
+//   });
 
 // EVENT HANDLER: 2) When client submits a message from form
 // socket.on("client_message", (message) => {
