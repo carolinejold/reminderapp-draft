@@ -1,28 +1,40 @@
 import React from "react";
+import { socket } from "../sockets/sockets.js";
+import "./Messages.css";
 
-const Message = ({ messageArr }) => {
-  const styles = {
-    div: {
-      textAlign: "center",
-      border: "solid 1px",
-      borderRadius: "10px",
-      padding: "2em, 1em, 2em, 1em",
-      margin: "0.5em",
-      maxWidth: "20em",
-      maxHeight: "7em",
-      overflowY: "scroll",
-      fontSize: "0.8em",
-    },
+const Message = ({ taskArr, setTaskArr }) => {
+  // TODO how can i make this more robust - message_id?
+  const toggleTask = (index) => {
+    const updatedTasks = [...taskArr];
+    updatedTasks[index].completed = !updatedTasks[index].completed;
+    setTaskArr(taskArr);
+    socket.emit("toggle_task", taskArr);
   };
 
   return (
     <div>
-      {messageArr.map((el, i) => {
+      {taskArr.map((el, i) => {
         return (
-          <div key={i} style={styles.div}>
-            <i>{el.name}</i>
+          <div
+            i={i}
+            key={el.message_id}
+            id={el.message_id}
+            className="task-div"
+            style={{
+              textDecoration: el.completed ? "line-through" : "",
+              order: el.completed ? "1" : "0", // NOT WORKING
+            }}
+            onClick={() => toggleTask(i)}
+          >
             <p>{el.task}</p>
-            <p>{el.date}</p>
+            <i>Added by {el.name}</i>
+            <p>
+              on {el.date} at {el.time}
+            </p>
+            <div>
+              <h3>Mark complete</h3>
+              <h3>Delete</h3>
+            </div>
           </div>
         );
       })}

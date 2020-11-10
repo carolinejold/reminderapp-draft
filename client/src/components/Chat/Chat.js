@@ -48,6 +48,7 @@ const Chat = () => {
       {/* <p>{disconnectMessage}</p> */}
       <Form name={name} room={room} />
       <Messages name={name} />
+      <p>Choose another list</p>
     </div>
   );
 };

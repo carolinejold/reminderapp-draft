@@ -3,18 +3,23 @@ import { socket } from "../sockets/sockets.js";
 import Message from "./Message.js";
 
 const Messages = () => {
-  const [messageArr, setMessageArr] = useState([]);
+  const [taskArr, setTaskArr] = useState([]);
 
   useEffect(() => {
     socket.on("server_message", (data) => {
       console.log("server message event received on frontend", data);
-      setMessageArr((messageArr) => [...messageArr, data]);
+      setTaskArr((taskArr) => [...taskArr, data]);
+    });
+
+    socket.on("toggled_task", (data) => {
+      console.log("toggled task data", data);
+      setTaskArr(data);
     });
   }, []);
 
   return (
     <div>
-      <Message messageArr={messageArr} />
+      <Message taskArr={taskArr} setTaskArr={setTaskArr} />
     </div>
   );
 };
