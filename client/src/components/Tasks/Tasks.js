@@ -6,7 +6,7 @@ import Form from "../Form/Form.js";
 import Messages from "../Messages/Messages.js";
 import { socket } from "../sockets/sockets.js";
 
-const Chat = () => {
+const Tasks = () => {
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [userJoinedMessage, setUserJoinedMessage] = useState([]);
   // const [userList, setUserList] = useState([]);
@@ -56,4 +56,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default Tasks;

@@ -8,7 +8,7 @@ const Join = () => {
   return (
     <div>
       <h1>Welcome to the Family Reminders App</h1>
-      <h3>Please enter your name</h3>
+      <h3>Please enter your name & choose list!</h3>
       <div>
         <input
           placeholder="Name"
@@ -29,9 +29,7 @@ const Join = () => {
         onClick={(event) => (!name || !room ? event.preventDefault() : null)}
         to={`/chat?name=${name}&room=${room}`}
       >
-        <button type="submit">
-          Sign In
-        </button>
+        <button type="submit">Sign In</button>
       </Link>
     </div>
   );
