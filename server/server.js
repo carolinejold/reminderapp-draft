@@ -5,11 +5,17 @@ const socketio = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+const cors = require("cors");
+
+const { MongoClient } = require("mongodb");
+const ATLAS_URI = `mongodb+srv://remindersAppUser:remindersAppUserPassword@remindersapp.vswsy.mongodb.net/remindersdb?retryWrites=true&w=majority`; // TODO move username (remindersAppUser), password (remindersAppUserPassword) and db (remindersapp) to .env file after dotenv installed. CHECK IF THIS IS THE CORRECT DATABASE NAME?? could be remindersapp?. i think remindersapp is the cluster.
+
+const client = new MongoClient(process.env[ATLAS_URI]);
+let collection;
 
 const formatMessage = require("./utils/messages.js");
 
 // CORS
-const cors = require("cors");
 app.use(cors());
 
 ////////////////////////////////////
@@ -21,6 +27,7 @@ const userJoin = (user_id, name, room) => {
   users.push(user);
   return user;
 };
+
 ////////////////////////////////////
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
@@ -29,7 +36,6 @@ io.on("connect", (socket) => {
 
   socket.on("new_user", ({ name, room }) => {
     const user = userJoin(socket.id, name, room);
-
     console.log("User details, new_user, server", user);
     socket.join(user.room);
     socket.emit(
@@ -63,10 +69,23 @@ io.on("connect", (socket) => {
 // DISCONNECT: Must be inside io-on connect
 
 // // ROUTES
-// app.get("/", (req, res) => {
-//   res.send({ message: "I AM A MESSAGE FROM EXPRESS" });
-// });
+app.get("/chat", async (req, res) => {
+  try {
+    let result = await collection.findOne({ _id: req.query.room }); // we want to find a single document based on the room value that was passed in with the request. This single document will have all of our previous chat conversations for the particular room. ALL MESSAGE OBJECTS MUST BE PUSHED INTO THAT DOCUMENT WITH THAT _id GIVEN TO IT BY MONGODB.
+    res.send(result);
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+  }
+});
 
 // PORT
 const port = 5000 || process.env.PORT;
-server.listen(port, () => console.log(`Server running on port ${port}`));
+server.listen(port, async () => {
+  try {
+    await client.connect();
+    collection = client.db("remindersdb").collection("tasks");
+    console.log(`Server running on port ${port}`);
+  } catch (e) {
+    console.error(e);
+  }
+});

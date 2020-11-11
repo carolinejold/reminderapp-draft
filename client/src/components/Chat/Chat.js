@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import queryString from "query-string";
 import Form from "../Form/Form.js";
 import Messages from "../Messages/Messages.js";
@@ -44,11 +46,12 @@ const Chat = () => {
           <p key={el}>{el}</p>
         ))}
       </div>
-
       {/* <p>{disconnectMessage}</p> */}
       <Form name={name} room={room} />
       <Messages name={name} />
-      <p>Choose another list</p>
+      <Link to={`/`}>
+        <p>Go back & choose another list</p>
+      </Link>
     </div>
   );
 };
