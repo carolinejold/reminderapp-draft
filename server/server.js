@@ -50,7 +50,6 @@ server.listen(port, async () => {
     await client.connect();
     collection = client.db("remindersdb").collection("tasks");
     console.log(`Server running on port ${port}`);
-    console.log("collection", collection.findOne());
   } catch (e) {
     console.error(e);
   }
@@ -78,7 +77,6 @@ const userJoin = (user_id, name, room) => {
   console.log("USERS ARRAY OUTSIDE", users);
   return user;
 };
-
 ////////////////////////////////////
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
@@ -90,7 +88,7 @@ io.on("connect", (socket) => {
     console.log("User details, new_user, server", user);
     try {
       let result = await collection.findOne({ _id: user.room });
-      console.log('RESSULLT', result)
+      console.log("mongoDB find collection:", result);
       if (!result) {
         await collection.insertOne({ _id: user.room, tasks: [] });
       }
@@ -108,31 +106,30 @@ io.on("connect", (socket) => {
     }
   });
 
-  // socket.on("client_message", (task) => {
-  //   console.log("USERS ARRAY INSIDE", users);
-  //   const messageUser = users.find((el) => el.user_id === socket.id);
-  //   console.log("messageUser:", messageUser);
-  //   const taskObj = formatMessage(messageUser.user_id, messageUser.name, task);
-  //   try {
-  //     console.log(messageUser.room, taskObj);
-  //     collection.updateOne({
-  //       _id: messageUser.room,
-  //       $push: { tasks: taskObj },
-  //     });
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // });
+  socket.on("client_message", (task) => {
+    console.log("USERS ARRAY INSIDE", users);
+    const messageUser = users.find((el) => el.user_id === socket.id);
+    console.log("messageUser:", messageUser);
+    const taskObj = formatMessage(messageUser.user_id, messageUser.name, task);
+    console.log("taskObj:", taskObj);
+    try {
+      console.log(messageUser.room, taskObj);
+      collection.updateOne(
+        { _id: messageUser.room },
+        { $push: { tasks: taskObj } }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  });
 
   // socket.on("toggle_task", (taskArr) => {
   //   io.emit("toggled_task", taskArr);
   // });
 });
 
-// EVENT HANDLER: When client disconnects
+// EVENT HANDLER: When client disconnects. must be inside io.on connect
 //   io.on("disconnect", (socket) => {
 //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
 //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
 //   });
-
-// DISCONNECT: Must be inside io-on connect
