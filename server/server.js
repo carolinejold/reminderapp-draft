@@ -10,24 +10,11 @@ const cors = require("cors");
 // CORS
 app.use(cors());
 
-// // MONGODB - traversy
-// const MongoClient = require("mongodb").MongoClient;
-
-// MongoClient.connect(
-//   "mongodb://localhost:5000/mongochat?authSource=admin",
-//   (err, db) => {
-//     if (err) {
-//       throw err;
-//     }
-//     console.log("MongoDB connected");
-//   }
-// );
-
-////////////// from MONGODB DOCUMENTATION /////////////
-
 const MongoClient = require("mongodb").MongoClient;
 const uri =
   "mongodb+srv://remindersAppUser:remindersAppUserPassword@remindersapp.vswsy.mongodb.net/remindersdb?retryWrites=true&w=majority"; // TODO move username (remindersAppUser), password (remindersAppUserPassword) and db (remindersapp) to .env file after dotenv installed. CHECK IF THIS IS THE CORRECT DATABASE NAME?? could be remindersapp?. i think remindersapp is the cluster.
+
+// TODO add client.close at some point?
 
 const client = new MongoClient(
   uri,
@@ -35,12 +22,6 @@ const client = new MongoClient(
   { useNewUrlParser: true }
 );
 
-// client.connect((err) => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   client.close();
-// });
-//////////////////////////////////////////////////////
 let collection;
 
 // PORT
@@ -58,7 +39,7 @@ server.listen(port, async () => {
 // ROUTES
 app.get("/chat", async (req, res) => {
   try {
-    let result = await collection.findOne({ _id: req.query.room }); // we want to find a single document based on the room value that was passed in with the request. This single document will have all of our previous chat conversations for the particular room. ALL MESSAGE OBJECTS MUST BE PUSHED INTO THAT DOCUMENT WITH THAT _id GIVEN TO IT BY MONGODB.
+    let result = await collection.findOne({ _id: req.query.room });
     res.send(result);
   } catch (e) {
     res.status(500).send({ message: e.message });
@@ -93,6 +74,14 @@ io.on("connect", (socket) => {
         await collection.insertOne({ _id: user.room, tasks: [] });
       }
       socket.join(user.room);
+      collection.find({ _id: user.room }).toArray((err, res) => {
+        if (err) {
+          throw err;
+        }
+        const dbTasks = res[0].tasks; // this is task list from db
+        console.log("RES FROM LINE 81", dbTasks);
+        io.to(user.room).emit("OUTPUT", dbTasks);
+      });
       socket.emit(
         "welcome_user",
         `Welcome to the ${user.room} list, ${user.name}!`
@@ -109,9 +98,8 @@ io.on("connect", (socket) => {
   socket.on("client_message", (task) => {
     console.log("USERS ARRAY INSIDE", users);
     const messageUser = users.find((el) => el.user_id === socket.id);
-    console.log("messageUser:", messageUser);
     const taskObj = formatMessage(messageUser.user_id, messageUser.name, task);
-    console.log("taskObj:", taskObj);
+    socket.emit("server_message", taskObj);
     try {
       console.log(messageUser.room, taskObj);
       collection.updateOne(
@@ -123,9 +111,9 @@ io.on("connect", (socket) => {
     }
   });
 
-  // socket.on("toggle_task", (taskArr) => {
-  //   io.emit("toggled_task", taskArr);
-  // });
+  socket.on("toggle_task", (taskArr) => {
+    io.emit("toggled_task", taskArr);
+  });
 });
 
 // EVENT HANDLER: When client disconnects. must be inside io.on connect
