@@ -53,6 +53,7 @@ const List = () => {
                 style={{ fontSize: "0.8em", color: "limegreen" }}
               />{" "}
               {el}
+              <br></br>
             </small>
           ))}
         </div>

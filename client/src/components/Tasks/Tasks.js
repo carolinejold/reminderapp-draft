@@ -20,10 +20,10 @@ const Tasks = () => {
       setTaskArr((taskArr) => [...taskArr, taskObj]);
     });
 
-    socket.on("toggled_task", (data) => {
-      // console.log("toggled task data", data);
-      setTaskArr(data);
-    });
+    // socket.on("toggled_task", (data) => {
+    //   // console.log("toggled task data", data);
+    //   setTaskArr(data);
+    // });
   }, []);
 
   return (

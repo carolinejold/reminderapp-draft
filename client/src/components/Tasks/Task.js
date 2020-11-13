@@ -6,14 +6,18 @@ import "./Task.css";
 
 const Task = ({ taskArr, setTaskArr }) => {
   // TODO how can i make this more robust - message_id?
-  const toggleTask = (index) => {
-    const updatedTasks = [...taskArr];
-    updatedTasks[index].completed = !updatedTasks[index].completed;
-    setTaskArr(taskArr);
-    const completedTasks = taskArr.filter(el => el.completed === true)
-    console.log('COMPLETED TASKS', completedTasks)
-    socket.emit("toggle_task", completedTasks);
-  };
+  // const toggleTask = (i) => {
+  //   const currentTasks = [...taskArr];
+  //   currentTasks[i].completed = !currentTasks[i].completed;
+  //   const completedTasks = taskArr.filter((el) => el.completed === true);
+  //   const pendingTasks = taskArr.filter((el) => el.completed === false);
+
+  //   setTaskArr(pendingTasks);
+
+  //   // setTaskArr(taskArr);
+  //   // console.log('COMPLETED TASKS', completedTasks)
+  //   socket.emit("toggle_task", { taskArr, completedTasks });
+  // };
 
   return (
     <div className="task-container">
@@ -28,7 +32,7 @@ const Task = ({ taskArr, setTaskArr }) => {
               textDecoration: el.completed ? "line-through" : "",
               order: el.completed ? "1" : "0", // NOT WORKING
             }}
-            onClick={() => toggleTask(i)}
+            // onClick={() => toggleTask(i)}
           >
             <p>{el.task}</p>
             <br></br>

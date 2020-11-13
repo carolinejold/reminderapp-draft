@@ -60,7 +60,7 @@ io.on("connect", (socket) => {
     console.log("User details, new_user, server", user);
     try {
       let result = await collection.findOne({ _id: user.room });
-      // console.log("mongoDB find collection:", result);
+      console.log("mongoDB find collection:", result);
       if (!result) {
         await collection.insertOne({ _id: user.room, tasks: [] });
       }
@@ -80,9 +80,10 @@ io.on("connect", (socket) => {
         `Welcome to the ${user.room} list, ${user.name}!`
       );
 
-      socket.broadcast
-        .to(user.room)
-        .emit("user_joined", `${user.name} joined the ${user.room} list!`);
+      io.to(user.room).emit(
+        "user_joined",
+        `${user.name} joined the ${user.room} list!`
+      );
 
       socket.activeRoom = room;
     } catch (e) {
@@ -106,69 +107,69 @@ io.on("connect", (socket) => {
     }
   });
 
-  socket.on("toggle_task", (taskArr, completedTasks) => {
-    // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
-    // TASK TOGGLED - MAKE IT IRREVERSIBLE
-    // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
+  // socket.on("toggle_task", (data) => {
+  // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
+  // TASK TOGGLED - MAKE IT IRREVERSIBLE
+  // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
 
-// FIRST  WAY - EASIER BUT PROBS NOT BEST
-    // 1) completedTasks separated
-    // 2) taskArr contains only non completed tasks
-    // 3) push taskArr to collection in db
-    // 4) push completedTasks to its own new cluser called <room>Completed
+  // FIRST  WAY - EASIER BUT PROBS NOT BEST
+  // 1) completedTasks separated
+  // 2) taskArr contains only non completed tasks
+  // 3) push taskArr to collection in db
+  // 4) push completedTasks to its own new cluser called <room>Completed
 
-    // SECOND WAY
-    // 1) Extract room from any element within taskArr 
-    // 2) Do that on/send that to the server
-    // 3) 
+  // SECOND WAY
+  // 1) Extract room from any element within taskArr
+  // 2) Do that on/send that to the server
+  // 3)
 
-    collection.update(
-      { _id: messageUser.room },
-      {
-        $push: {
-          tasks: {
-             $each: [taskArr]
-            }
-          }
-        }
-    );
+  // console.log("DAATTAAAA", data);
 
+  // collection.update(
+  //   { _id: messageUser.room },
+  //   {
+  //     $push: {
+  //       tasks: {
+  //          $each: [taskArr]
+  //         }
+  //       }
+  //     }
+  // );
 
-    collection.update({}, 
-      {$pull:
-        {tasks:
-          {$in: [ { _id: ROOOOM },
-          { completed : true } ] }
-        }
-      }, 
-      {multi: true}
-      );
+  // collection.update({},
+  //   {$pull:
+  //     {tasks:
+  //       {$in: [ { _id: ROOOOM },
+  //       { completed : true } ] }
+  //     }
+  //   },
+  //   {multi: true}
+  //   );
 
-      // TODO return updated db and send this as the new data for the "toggled task" event
-      collection.find({ _id: ROOOOM }).toArray((err, res) => {
-        if (err) {
-          throw err;
-        }
-        const pendingTaskArr = res[0].tasks;
+  // TODO return updated db and send this as the new data for the "toggled task" event
+  // collection.find({ _id: ROOOOM }).toArray((err, res) => {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //   const pendingTaskArr = res[0].tasks;
 
-      // collection.updateOne(
-      //   { _id: ROOOMComplete },
-      //   { $push: { tasks: taskObj } }
-      // );
+  // collection.updateOne(
+  //   { _id: ROOOMComplete },
+  //   { $push: { tasks: taskObj } }
+  // );
 
-
-    io.emit("toggled_task", pendingTaskArr);
-  });
-
-  // socket.on("delete_task", (taskArr) => {
-  //   io.emit("deleted_task", taskArr);
-  // });
-
-  //   io.on("disconnect", (socket) => {
-  //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-  //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
-  //   });
+  // io.emit("toggled_task", data);
 });
+
+// socket.on("delete_task", (taskArr) => {
+//   io.emit("deleted_task", taskArr);
+// });
+
+//   io.on("disconnect", (socket) => {
+//     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
+//     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
+//   });
+// });
 
 // EVENT HANDLER: When client disconnects. must be inside io.on connect
 

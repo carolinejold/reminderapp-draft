@@ -28,7 +28,6 @@ const Join = () => {
         <br></br>
         <div>
           <TextField
-            id="standard-basic"
             label="Enter your name"
             placeholder="Name"
             className="join-input"
@@ -38,7 +37,6 @@ const Join = () => {
         </div>
         <div>
           <TextField
-            id="standard-basic"
             label="Select your list"
             placeholder="List"
             className="join-input"
@@ -54,7 +52,7 @@ const Join = () => {
           onClick={(e) => (!name || !room ? enterDetails(e) : null)}
           to={`/list?room=${room}&name=${name}`}
         >
-          <Button variant="outlined" color="white" type="submit">
+          <Button variant="outlined" color="default" type="submit">
             Submit
           </Button>
         </Link>
