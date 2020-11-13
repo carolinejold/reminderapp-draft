@@ -106,22 +106,14 @@ io.on("connect", (socket) => {
     }
   });
 
-  // socket.on("toggle_task", (taskArr) => {
-  //   // 1. replace all of the documents in the db with the new taskArr
-  //   // 2. best case: instead of adding task to tasks collection/replacing all docs in the collection, replace the OBJECT with the message_id equal to the one which has been changed
+  socket.on("toggle_task", (taskArr) => {
+    // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
+    // TASK TOGGLED - MAKE IT IRREVERSIBLE
+    // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
 
-  //   // const toggledTask = this is the object which has been altered. 
-  //   // replace the current object in the array with teh SAME MESSAGE ID, with this new toggledTask
-
-  //   // toggledTask.message_id 
-
-  //   // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
-  //   // TASK TOGGLED - MAKE IT IRREVERSIBLE
-  //   // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
-  //   // 
-
-  //   io.emit("toggled_task", taskArr);
-  // });
+    //  { completed: true });
+    io.emit("toggled_task", taskArr);
+  });
 
   // socket.on("delete_task", (taskArr) => {
   //   io.emit("deleted_task", taskArr);

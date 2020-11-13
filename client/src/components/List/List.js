@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import Container from "@material-ui/core/Container";
+import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import queryString from "query-string";
 import Form from "../Form/Form.js";
 import Tasks from "../Tasks/Tasks.js";
 import { socket } from "../sockets/sockets.js";
+import "./List.css";
 
 const List = () => {
   const [welcomeMessage, setWelcomeMessage] = useState("");
@@ -35,21 +39,31 @@ const List = () => {
   }, []);
 
   return (
-    <div>
+    <Container maxWidth="md">
       <h1>Family Reminders App</h1>
+      <Divider variant="middle" />
+      <br></br>
       <p>{welcomeMessage}</p>
       <div>
         {userJoinedMessage.map((el) => (
-          <p key={el}>{el}</p>
+          <small key={el}>
+            {" "}
+            <FiberManualRecordIcon
+              style={{ fontSize: "0.8em", color: "limegreen" }}
+            />{" "}
+            {el}
+          </small>
         ))}
       </div>
+      <br></br>
       {/* <p>{disconnectMessage}</p> */}
       <Form name={name} room={room} />
       <Tasks name={name} />
+      <br></br>
       <Link to={`/`}>
-        <p>Go back & choose another list</p>
+        <Button>Go back & choose another list</Button>
       </Link>
-    </div>
+    </Container>
   );
 };
 

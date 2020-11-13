@@ -1,11 +1,9 @@
-import React from 'react'
+import React from "react";
+import Container from "@material-ui/core/Container";
+import "./Complete.css";
 
 const Complete = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+  return <Container maxWidth="sm"></Container>;
+};
 
 export default Complete;

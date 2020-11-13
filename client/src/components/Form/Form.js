@@ -3,6 +3,8 @@
 // https://stackoverflow.com/questions/61986655/react-hooks-how-to-make-a-post-request-to-server
 
 import React, { useState } from "react";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 import { socket } from "../sockets/sockets.js";
 
 const Form = ({ name, room }) => {
@@ -25,17 +27,16 @@ const Form = ({ name, room }) => {
     <div>
       <form onSubmit={handleSubmit}>
         <label>
-          {name}, add your task:
-          <br></br>
-          <input
-            placeholder="what do you need to do?"
+          <TextField
+            id="standard-basic"
+            label="Add your task"
             type="text"
             name="task"
             value={inputValue}
             onChange={onChange}
           />
-        </label>
-        <button type="submit">Add</button>
+        </label><br></br>
+        <Button type="submit">Add</Button>
       </form>
     </div>
   );

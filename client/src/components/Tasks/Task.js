@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "@material-ui/core/Button";
+import Divider from "@material-ui/core/Divider";
 import { socket } from "../sockets/sockets.js";
 import "./Task.css";
 
@@ -12,7 +14,7 @@ const Task = ({ taskArr, setTaskArr }) => {
   };
 
   return (
-    <div>
+    <div className="task-container">
       {taskArr.map((el, i) => {
         return (
           <div
@@ -27,13 +29,31 @@ const Task = ({ taskArr, setTaskArr }) => {
             onClick={() => toggleTask(i)}
           >
             <p>{el.task}</p>
-            <i>Added by {el.name}</i>
-            <p>
-              on {el.date} at {el.time}
-            </p>
+            <br></br>
+            <Divider variant="middle" />
+            <br></br>
+            <small>
+              <p>
+                Added by {el.name} on {el.date} at {el.time}
+              </p>
+            </small>
             <div>
-              <h3>Mark complete</h3>
-              <h3>Delete</h3>
+              <Button
+                style={{
+                  margin: "1em 0em 0em 0em",
+                  backgroundColor: "white",
+                  width: "0.5em",
+                  height: "3em",
+                  fontSize: "0.7em",
+                  fontWeight: "400",
+                }}
+                variant="outlined"
+                color="default"
+                // onClick={handleClick}
+              >
+                {/* {toggleExtra === true ? "Hide details" : "More details"} */}
+                Delete
+              </Button>
             </div>
           </div>
         );
