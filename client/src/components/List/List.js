@@ -65,6 +65,9 @@ const List = () => {
           <Button>Go back & choose another list</Button>
         </Link>
       </div>
+      <p className="hint">
+        HINT: Scroll down within each task card to see details and options
+      </p>
     </Container>
   );
 };

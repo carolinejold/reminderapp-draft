@@ -13,3 +13,8 @@ h1 {
   border-radius: 16px;
   box-shadow: "0px 5px 25px 0px rgba(30, 30, 30, 0.5)";
 } 
+
+.hint {
+  color: rgb(87, 87, 87);
+  font-weight: 300;
+}

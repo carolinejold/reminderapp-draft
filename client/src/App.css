@@ -14,3 +14,8 @@ body {
   /* background-color: rgba(54, 60, 71, 1); */
   background-color: rgb(234, 235, 230);
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

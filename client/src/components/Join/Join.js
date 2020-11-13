@@ -8,6 +8,12 @@ import "./Join.css";
 const Join = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
+  const [errMessage, setErrMessage] = useState("");
+
+  const enterDetails = (e) => {
+    e.preventDefault();
+    setErrMessage("Please enter a name and a list to continue");
+  };
 
   return (
     <div>
@@ -45,13 +51,23 @@ const Join = () => {
         </small>
 
         <Link
-          onClick={(event) => (!name || !room ? event.preventDefault() : null)}
+          onClick={(e) => (!name || !room ? enterDetails(e) : null)}
           to={`/list?room=${room}&name=${name}`}
         >
           <Button variant="outlined" color="white" type="submit">
             Submit
           </Button>
         </Link>
+        <br></br>
+        <br></br>
+        <small
+          style={{
+            visibility: !name || !room ? "visible" : "hidden",
+            color: "red",
+          }}
+        >
+          {errMessage}
+        </small>
       </div>
     </div>
   );
