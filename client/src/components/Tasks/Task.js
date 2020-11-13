@@ -1,23 +1,21 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-// import { socket } from "../sockets/sockets.js";
+import { socket } from "../sockets/sockets.js";
 import "./Task.css";
 
-const Task = ({ taskArr, setTaskArr }) => {
+const Task = ({ taskArr, setTaskArr, completedArr, setCompletedArr }) => {
   // TODO how can i make this more robust - message_id?
-  // const toggleTask = (i) => {
-  //   const currentTasks = [...taskArr];
-  //   currentTasks[i].completed = !currentTasks[i].completed;
-  //   const completedTasks = taskArr.filter((el) => el.completed === true);
-  //   const pendingTasks = taskArr.filter((el) => el.completed === false);
-
-  //   setTaskArr(pendingTasks);
-
-  //   // setTaskArr(taskArr);
-  //   // console.log('COMPLETED TASKS', completedTasks)
-  //   socket.emit("toggle_task", { taskArr, completedTasks });
-  // };
+  const toggleTask = (i) => {
+    const currentTasks = [...taskArr];
+    currentTasks[i].completed = true; // !currentTasks[i].completed;
+    // const completedTasks = await taskArr.filter((el) => el.completed === true);
+    const pendingTasks = taskArr.filter((el) => el.completed === false);
+    setTaskArr(pendingTasks);
+    // setCompletedArr(completedTasks);
+    socket.emit("pending_tasks", taskArr);
+    // socket.emit("complete_tasks", completedArr);
+  };
 
   return (
     <div className="task-container">
@@ -28,11 +26,11 @@ const Task = ({ taskArr, setTaskArr }) => {
             key={el.message_id}
             id={el.message_id}
             className="task-div"
-            // style={{
-            //   textDecoration: el.completed ? "line-through" : "",
-            //   order: el.completed ? "1" : "0", // NOT WORKING
-            // }}
-            // onClick={() => toggleTask(i)}
+            style={{
+              textDecoration: el.completed ? "line-through" : "",
+              order: el.completed ? "1" : "0",
+            }}
+            onClick={() => toggleTask(i)}
           >
             <p>{el.task}</p>
             <br></br>

@@ -6,17 +6,20 @@ import "./Tasks.css";
 
 const Tasks = () => {
   const [taskArr, setTaskArr] = useState([]);
+  const [completedArr, setCompletedArr] = useState([]);
 
   useEffect(() => {
     socket.on("showDbTasks", (dbTasks) => {
-      console.log("BEFORE ADDING TO STATE", dbTasks);
       setTaskArr(dbTasks);
-      console.log("AFTER ADDING TO STATE", taskArr);
     });
 
     socket.on("server_message", (taskObj) => {
       console.log("server message event received on frontend", taskObj);
       setTaskArr((taskArr) => [...taskArr, taskObj]);
+    });
+
+    socket.on("update_pending", (data) => {
+      setTaskArr(data);
     });
 
     // socket.on("toggled_task", (data) => {
@@ -27,7 +30,12 @@ const Tasks = () => {
 
   return (
     <div className="tasks-container">
-      <Task taskArr={taskArr} setTaskArr={setTaskArr} />
+      <Task
+        taskArr={taskArr}
+        setTaskArr={setTaskArr}
+        completedArr={completedArr}
+        setCompletedArr={setCompletedArr}
+      />
       <Complete />
     </div>
   );

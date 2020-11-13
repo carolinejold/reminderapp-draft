@@ -59,7 +59,7 @@ io.on("connect", (socket) => {
     // console.log("User details, new_user, server", user);
     try {
       let result = await collection.findOne({ _id: user.room });
-      console.log("mongoDB find collection:", result);
+      // console.log("mongoDB find collection:", result);
       if (!result) {
         await collection.insertOne({ _id: user.room, tasks: [] });
       }
@@ -93,11 +93,16 @@ io.on("connect", (socket) => {
   socket.on("client_message", (task) => {
     // console.log("USERS ARRAY INSIDE", users);
     const messageUser = users.find((el) => el.user_id === socket.id);
-    const taskObj = formatMessage(messageUser.user_id, messageUser.name, task);
+    const taskObj = formatMessage(
+      messageUser.user_id,
+      messageUser.name,
+      messageUser.room,
+      task
+    );
     try {
-      console.log(messageUser.room, taskObj);
+      console.log(taskObj);
       collection.updateOne(
-        { _id: messageUser.room },
+        { _id: taskObj.room },
         { $push: { tasks: taskObj } }
       );
       io.emit("server_message", taskObj);
@@ -106,78 +111,83 @@ io.on("connect", (socket) => {
     }
   });
 
-  // socket.on("toggle_task", (data) => {
-  // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
-  // TASK TOGGLED - MAKE IT IRREVERSIBLE
-  // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
+  socket.on("pending_tasks", (data) => {
+    // TASK TOGGLED - MAKE IT IRREVERSIBLE
+    // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
 
-  // FIRST  WAY - EASIER BUT PROBS NOT BEST
-  // 1) completedTasks separated
-  // 2) taskArr contains only non completed tasks
-  // 3) push taskArr to collection in db
-  // 4) push completedTasks to its own new cluser called <room>Completed
+    // FIRST  WAY - EASIER BUT PROBS NOT BEST
+    // 1) completedTasks separated
+    // 2) taskArr contains only non completed tasks
+    // 3) push taskArr to collection in db
+    // 4) push completedTasks to its own new cluser called <room>Completed
 
-  // SECOND WAY
-  // 1) Extract room from any element within taskArr
-  // 2) Do that on/send that to the server
-  // 3)
+    // SECOND WAY
+    // 1) Extract room from any element within taskArr
+    // 2) Do that on/send that to the server
+    // 3)
 
-  // console.log("DAATTAAAA", data);
+    // THIS WORKS
+    const pendingTasks = data.filter((el) => el.completed === false);
+    io.emit("update_pending", pendingTasks);
+    console.log("PENDING TASKS:", pendingTasks);
+    console.log("DATA 0 DOT ROOM:", data[0].room);
+    // This works. Now just need to send all of this DATA to the database of the particular room.
+    // extract room data from array of objects
 
-  // collection.update(
-  //   { _id: messageUser.room },
-  //   {
-  //     $push: {
-  //       tasks: {
-  //          $each: [taskArr]
-  //         }
-  //       }
-  //     }
-  // );
+    // collection.update(
+    //   { _id: data[0].room },
+    //   {
+    //     $push: {
+    //       tasks: {
+    //          $each: [data]
+    //         }
+    //       }
+    //     }
+    // );
 
-  // collection.update({},
-  //   {$pull:
-  //     {tasks:
-  //       {$in: [ { _id: ROOOOM },
-  //       { completed : true } ] }
-  //     }
-  //   },
-  //   {multi: true}
-  //   );
+    // collection.update({},
+    //   {$pull:
+    //     {tasks:
+    //       {$in: [ { _id: ROOOOM },
+    //       { completed : true } ] }
+    //     }
+    //   },
+    //   {multi: true}
+    //   );
 
-  // TODO return updated db and send this as the new data for the "toggled task" event
-  // collection.find({ _id: ROOOOM }).toArray((err, res) => {
-  //   if (err) {
-  //     throw err;
+    // TODO return updated db and send this as the new data for the "toggled task" event
+    // collection.find({ _id: ROOOOM }).toArray((err, res) => {
+    //   if (err) {
+    //     throw err;
+    //   }
+    //   const pendingTaskArr = res[0].tasks;
+
+    // collection.updateOne(
+    //   { _id: ROOOMComplete },
+    //   { $push: { tasks: taskObj } }
+    // );
+
+    // io.emit("toggled_task", data);
+  });
+
+  // socket.on("delete_task", (taskArr) => {
+  //   io.emit("deleted_task", taskArr);
+  // });
+
+  //   io.on("disconnect", (socket) => {
+  //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
+  //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
+  //   });
+  // });
+
+  // EVENT HANDLER: When client disconnects. must be inside io.on connect
+
+  // ROUTES
+  // app.get("/chat", async (req, res) => {
+  //   try {
+  //     let result = await collection.findOne({ _id: req.query.room });
+  //     res.send(result);
+  //   } catch (e) {
+  //     res.status(500).send({ message: e.message });
   //   }
-  //   const pendingTaskArr = res[0].tasks;
-
-  // collection.updateOne(
-  //   { _id: ROOOMComplete },
-  //   { $push: { tasks: taskObj } }
-  // );
-
-  // io.emit("toggled_task", data);
 });
-
-// socket.on("delete_task", (taskArr) => {
-//   io.emit("deleted_task", taskArr);
-// });
-
-//   io.on("disconnect", (socket) => {
-//     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
-//     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
-//   });
-// });
-
-// EVENT HANDLER: When client disconnects. must be inside io.on connect
-
-// ROUTES
-// app.get("/chat", async (req, res) => {
-//   try {
-//     let result = await collection.findOne({ _id: req.query.room });
-//     res.send(result);
-//   } catch (e) {
-//     res.status(500).send({ message: e.message });
-//   }
-// });
