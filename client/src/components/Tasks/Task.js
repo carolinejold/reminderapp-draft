@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-import { socket } from "../sockets/sockets.js";
+// import { socket } from "../sockets/sockets.js";
 import "./Task.css";
 
 const Task = ({ taskArr, setTaskArr }) => {
@@ -28,10 +28,10 @@ const Task = ({ taskArr, setTaskArr }) => {
             key={el.message_id}
             id={el.message_id}
             className="task-div"
-            style={{
-              textDecoration: el.completed ? "line-through" : "",
-              order: el.completed ? "1" : "0", // NOT WORKING
-            }}
+            // style={{
+            //   textDecoration: el.completed ? "line-through" : "",
+            //   order: el.completed ? "1" : "0", // NOT WORKING
+            // }}
             // onClick={() => toggleTask(i)}
           >
             <p>{el.task}</p>

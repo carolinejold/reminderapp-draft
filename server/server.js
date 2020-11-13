@@ -16,8 +16,7 @@ const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME;
 
 const MongoClient = require("mongodb").MongoClient;
-const uri = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`; // TODO move username (remindersAppUser), password (remindersAppUserPassword) and db (remindersapp) to .env file after dotenv installed. CHECK IF THIS IS THE CORRECT DATABASE NAME?? could be remindersapp?. i think remindersapp is the cluster.
-
+const uri = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 // TODO add client.close at some point?
 
 const client = new MongoClient(
@@ -57,7 +56,7 @@ io.on("connect", (socket) => {
 
   socket.on("new_user", async ({ name, room }) => {
     const user = userJoin(socket.id, name, room);
-    console.log("User details, new_user, server", user);
+    // console.log("User details, new_user, server", user);
     try {
       let result = await collection.findOne({ _id: user.room });
       console.log("mongoDB find collection:", result);
@@ -71,7 +70,7 @@ io.on("connect", (socket) => {
           throw err;
         }
         const dbTasks = res[0].tasks; // this is task list from db
-        // console.log("RES FROM LINE 81", dbTasks);
+        // console.log("RES FROM LINE 73", dbTasks);
         io.to(user.room).emit("showDbTasks", dbTasks);
       });
 
@@ -95,13 +94,13 @@ io.on("connect", (socket) => {
     // console.log("USERS ARRAY INSIDE", users);
     const messageUser = users.find((el) => el.user_id === socket.id);
     const taskObj = formatMessage(messageUser.user_id, messageUser.name, task);
-    socket.emit("server_message", taskObj);
     try {
       console.log(messageUser.room, taskObj);
       collection.updateOne(
         { _id: messageUser.room },
         { $push: { tasks: taskObj } }
       );
+      io.emit("server_message", taskObj);
     } catch (e) {
       console.error(e);
     }

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Container from "@material-ui/core/Container";
 import { socket } from "../sockets/sockets.js";
 import Task from "./Task.js";
 import Complete from "./Complete.js";
@@ -16,7 +15,7 @@ const Tasks = () => {
     });
 
     socket.on("server_message", (taskObj) => {
-      // console.log("server message event received on frontend", taskObj);
+      console.log("server message event received on frontend", taskObj);
       setTaskArr((taskArr) => [...taskArr, taskObj]);
     });
 
@@ -27,10 +26,10 @@ const Tasks = () => {
   }, []);
 
   return (
-    <Container className="tasks-container">
+    <div className="tasks-container">
       <Task taskArr={taskArr} setTaskArr={setTaskArr} />
       <Complete />
-    </Container>
+    </div>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
@@ -39,7 +38,8 @@ const List = () => {
   }, []);
 
   return (
-    <Container maxWidth="md">
+    // <Container maxWidth="md">
+    <div>
       <div className="list-container">
         <h1>{welcomeMessage}</h1>
         <Divider variant="middle" />
@@ -69,7 +69,8 @@ const List = () => {
       <p className="hint">
         HINT: Scroll down within each task card to see details and options
       </p>
-    </Container>
+    </div>
+    // </Container>
   );
 };
 
