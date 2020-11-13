@@ -1,57 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-
-import queryString from "query-string";
-import Form from "../Form/Form.js";
-import Messages from "../Messages/Messages.js";
+import React, { useEffect, useState } from "react";
 import { socket } from "../sockets/sockets.js";
+import Task from "./Task.js";
+import Complete from "./Complete.js";
 
 const Tasks = () => {
-  const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [userJoinedMessage, setUserJoinedMessage] = useState([]);
-  // const [userList, setUserList] = useState([]);
-  // const [disconnectMessage, setDisconnectMessage] = useState("");
-  const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
+  const [taskArr, setTaskArr] = useState([]);
 
   useEffect(() => {
-    const { name, room } = queryString.parse(window.location.search);
-    setRoom(room);
-    setName(name);
-
-    // 1) Emit new user event on connection from server
-    socket.emit("new_user", { name, room });
-
-    // 2) Receive welcome_user event from server
-    socket.on("welcome_user", (data) => {
-      setWelcomeMessage(data);
+    socket.on("showDbTasks", (dbTasks) => {
+      console.log('BEFORE ADDING TO STATE', dbTasks)
+      setTaskArr(dbTasks);
+      console.log('AFTER ADDING TO STATE', taskArr);
     });
 
-    // 2.5) Receive user_joined event from server
-    socket.on("user_joined", (data) => {
-      setUserJoinedMessage((userJoinedMessage) => [...userJoinedMessage, data]);
+    socket.on("server_message", (taskObj) => {
+      // console.log("server message event received on frontend", taskObj);
+      setTaskArr((taskArr) => [...taskArr, taskObj]);
     });
 
-    // socket.on("user_left", (data) => {
-    //   console.log("disconnect data", data);
-    //   setDisconnectMessage(data);
+    // socket.on("toggled_task", (data) => {
+    //   // console.log("toggled task data", data);
+    //   setTaskArr(data);
+    // });
   }, []);
 
   return (
     <div>
-      <h1>Family Reminders App</h1>
-      <p>{welcomeMessage}</p>
-      <div>
-        {userJoinedMessage.map((el) => (
-          <p key={el}>{el}</p>
-        ))}
-      </div>
-      {/* <p>{disconnectMessage}</p> */}
-      <Form name={name} room={room} />
-      <Messages name={name} />
-      <Link to={`/`}>
-        <p>Go back & choose another list</p>
-      </Link>
+      <Task taskArr={taskArr} setTaskArr={setTaskArr} />
+      <Complete />
     </div>
   );
 };

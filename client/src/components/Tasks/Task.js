@@ -1,8 +1,8 @@
 import React from "react";
 import { socket } from "../sockets/sockets.js";
-import "./Messages.css";
+import "./Task.css";
 
-const Message = ({ taskArr, setTaskArr }) => {
+const Task = ({ taskArr, setTaskArr }) => {
   // TODO how can i make this more robust - message_id?
   const toggleTask = (index) => {
     const updatedTasks = [...taskArr];
@@ -42,4 +42,4 @@ const Message = ({ taskArr, setTaskArr }) => {
   );
 };
 
-export default Message;
+export default Task;

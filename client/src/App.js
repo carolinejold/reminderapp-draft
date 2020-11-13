@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import Tasks from "./components/Tasks/Tasks.js";
+import List from "./components/List/List.js";
 import Join from "./components/Join/Join.js";
 import "./App.css";
 
@@ -9,7 +9,7 @@ const App = () => {
     <div className="App">
       <Router>
         <Route path="/" exact component={Join} />
-        <Route path="/chat" exact component={Tasks} />
+        <Route path="/list" exact component={List} />
       </Router>
     </div>
   );
