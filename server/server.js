@@ -106,13 +106,58 @@ io.on("connect", (socket) => {
     }
   });
 
-  socket.on("toggle_task", (taskArr) => {
+  socket.on("toggle_task", (taskArr, completedTasks) => {
     // NEW PLAN FOR TOGGLED TASKS !!!!!!!!!!!!!
     // TASK TOGGLED - MAKE IT IRREVERSIBLE
     // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
 
-    //  { completed: true });
-    io.emit("toggled_task", taskArr);
+// FIRST  WAY - EASIER BUT PROBS NOT BEST
+    // 1) completedTasks separated
+    // 2) taskArr contains only non completed tasks
+    // 3) push taskArr to collection in db
+    // 4) push completedTasks to its own new cluser called <room>Completed
+
+    // SECOND WAY
+    // 1) Extract room from any element within taskArr 
+    // 2) Do that on/send that to the server
+    // 3) 
+
+    collection.update(
+      { _id: messageUser.room },
+      {
+        $push: {
+          tasks: {
+             $each: [taskArr]
+            }
+          }
+        }
+    );
+
+
+    collection.update({}, 
+      {$pull:
+        {tasks:
+          {$in: [ { _id: ROOOOM },
+          { completed : true } ] }
+        }
+      }, 
+      {multi: true}
+      );
+
+      // TODO return updated db and send this as the new data for the "toggled task" event
+      collection.find({ _id: ROOOOM }).toArray((err, res) => {
+        if (err) {
+          throw err;
+        }
+        const pendingTaskArr = res[0].tasks;
+
+      // collection.updateOne(
+      //   { _id: ROOOMComplete },
+      //   { $push: { tasks: taskObj } }
+      // );
+
+
+    io.emit("toggled_task", pendingTaskArr);
   });
 
   // socket.on("delete_task", (taskArr) => {

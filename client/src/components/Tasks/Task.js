@@ -10,7 +10,9 @@ const Task = ({ taskArr, setTaskArr }) => {
     const updatedTasks = [...taskArr];
     updatedTasks[index].completed = !updatedTasks[index].completed;
     setTaskArr(taskArr);
-    socket.emit("toggle_task", taskArr);
+    const completedTasks = taskArr.filter(el => el.completed === true)
+    console.log('COMPLETED TASKS', completedTasks)
+    socket.emit("toggle_task", completedTasks);
   };
 
   return (
