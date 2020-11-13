@@ -11,41 +11,48 @@ const Join = () => {
 
   return (
     <div>
-      <h1>Family Reminders App</h1>
-      <Divider variant="middle" />
-      <br></br>
-      <h3>
-        Welcome, please enter your name & choose which list you'd like to view.
-      </h3>
-      <br></br>
-      <div>
-        <TextField
-          id="standard-basic"
-          label="Enter your name"
-          placeholder="Name"
-          className="join-input"
-          type="text"
-          onChange={(e) => setName(e.target.value)}
-        />
+      <div className="join-container">
+        <h1>Family Reminders App</h1>
+        <Divider variant="middle" />
+        <br></br>
+        <h3>
+          Welcome, please enter your name & choose which list you'd like to
+          view.
+        </h3>
+        <br></br>
+        <div>
+          <TextField
+            id="standard-basic"
+            label="Enter your name"
+            placeholder="Name"
+            className="join-input"
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            id="standard-basic"
+            label="Select your list"
+            placeholder="List"
+            className="join-input"
+            type="text"
+            onChange={(e) => setRoom(e.target.value)}
+          />
+        </div>
+        <small>
+          <br></br>
+        </small>
+
+        <Link
+          onClick={(event) => (!name || !room ? event.preventDefault() : null)}
+          to={`/list?room=${room}&name=${name}`}
+        >
+          <Button variant="outlined" color="white" type="submit">
+            Submit
+          </Button>
+        </Link>
       </div>
-      <div>
-        <TextField
-          id="standard-basic"
-          label="Select your list"
-          placeholder="List"
-          className="join-input"
-          type="text"
-          onChange={(e) => setRoom(e.target.value)}
-        />
-      </div>
-      <Link
-        onClick={(event) => (!name || !room ? event.preventDefault() : null)}
-        to={`/list?room=${room}&name=${name}`}
-      >
-        <Button color="default" type="submit">
-          Submit
-        </Button>
-      </Link>
     </div>
   );
 };

@@ -40,29 +40,31 @@ const List = () => {
 
   return (
     <Container maxWidth="md">
-      <h1>Family Reminders App</h1>
-      <Divider variant="middle" />
-      <br></br>
-      <p>{welcomeMessage}</p>
-      <div>
-        {userJoinedMessage.map((el) => (
-          <small key={el}>
-            {" "}
-            <FiberManualRecordIcon
-              style={{ fontSize: "0.8em", color: "limegreen" }}
-            />{" "}
-            {el}
-          </small>
-        ))}
+      <div className="list-container">
+        <h1>{welcomeMessage}</h1>
+        <Divider variant="middle" />
+        <br></br>
+        <p></p>
+        <div>
+          {userJoinedMessage.map((el) => (
+            <small key={el}>
+              {" "}
+              <FiberManualRecordIcon
+                style={{ fontSize: "0.8em", color: "limegreen" }}
+              />{" "}
+              {el}
+            </small>
+          ))}
+        </div>
+        <br></br>
+        {/* <p>{disconnectMessage}</p> */}
+        <Form name={name} room={room} />
+        <Tasks name={name} />
+        <br></br>
+        <Link to={`/`}>
+          <Button>Go back & choose another list</Button>
+        </Link>
       </div>
-      <br></br>
-      {/* <p>{disconnectMessage}</p> */}
-      <Form name={name} room={room} />
-      <Tasks name={name} />
-      <br></br>
-      <Link to={`/`}>
-        <Button>Go back & choose another list</Button>
-      </Link>
     </Container>
   );
 };

@@ -10,5 +10,7 @@
 
 body {
   margin: 1em;
-  background-color: rgba(240, 240, 240, 1);
+  /* background-color: rgba(240, 240, 240, 1); */
+  /* background-color: rgba(54, 60, 71, 1); */
+  background-color: rgb(234, 235, 230);
 }

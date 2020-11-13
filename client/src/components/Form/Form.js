@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { socket } from "../sockets/sockets.js";
+import './Form.css';
 
 const Form = ({ name, room }) => {
   const [inputValue, setInputValue] = useState(""); // TODO: try to change these into array of objects rather than separate states. [{title: 'something', desc: 'something'}]
@@ -34,9 +35,12 @@ const Form = ({ name, room }) => {
             name="task"
             value={inputValue}
             onChange={onChange}
+            className="form-task-input"
           />
-        </label><br></br>
-        <Button type="submit">Add</Button>
+        </label>
+        <Button className="form-button" type="submit">
+          Add
+        </Button>
       </form>
     </div>
   );
