@@ -13,7 +13,7 @@ const Task = ({ taskArr, setTaskArr, completedArr, setCompletedArr }) => {
     const pendingTasks = taskArr.filter((el) => el.completed === false);
     setTaskArr(pendingTasks);
     // setCompletedArr(completedTasks);
-    socket.emit("pending_tasks", taskArr);
+    socket.emit("pending_tasks", pendingTasks);
     // socket.emit("complete_tasks", completedArr);
   };
 

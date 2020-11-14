@@ -100,7 +100,7 @@ io.on("connect", (socket) => {
       task
     );
     try {
-      console.log(taskObj);
+      console.log("TASKOBJ:", taskObj);
       collection.updateOne(
         { _id: taskObj.room },
         { $push: { tasks: taskObj } }
@@ -127,33 +127,30 @@ io.on("connect", (socket) => {
     // 3)
 
     // THIS WORKS
-    const pendingTasks = data.filter((el) => el.completed === false);
-    io.emit("update_pending", pendingTasks);
-    console.log("PENDING TASKS:", pendingTasks);
+    // const pendingTasks = data.filter((el) => el.completed === false);
+    // const completedTasks = data.filter((el) => el.completed === true);
+    io.emit("update_pending", data);
+    console.log("PENDING TASKS:", data);
     console.log("DATA 0 DOT ROOM:", data[0].room);
+
     // This works. Now just need to send all of this DATA to the database of the particular room.
     // extract room data from array of objects
 
-    // collection.update(
+    // UPDATE ALL THE TASKS FIRST AND THEN PULL THE COMPLETED ONES
+    collection.updateMany({ _id: data[0].room }, { $set: { tasks: data } });
+
+
+    // collection.updateMany(
     //   { _id: data[0].room },
     //   {
-    //     $push: {
+    //     $pull: {
     //       tasks: {
-    //          $each: [data]
-    //         }
-    //       }
-    //     }
-    // );
-
-    // collection.update({},
-    //   {$pull:
-    //     {tasks:
-    //       {$in: [ { _id: ROOOOM },
-    //       { completed : true } ] }
-    //     }
+    //         completed: true,
+    //       },
+    //     },
     //   },
-    //   {multi: true}
-    //   );
+    //   { multi: true }
+    // );
 
     // TODO return updated db and send this as the new data for the "toggled task" event
     // collection.find({ _id: ROOOOM }).toArray((err, res) => {
@@ -190,4 +187,5 @@ io.on("connect", (socket) => {
   //   } catch (e) {
   //     res.status(500).send({ message: e.message });
   //   }
+  // });
 });
