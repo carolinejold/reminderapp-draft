@@ -112,59 +112,22 @@ io.on("connect", (socket) => {
   });
 
   socket.on("pending_tasks", (data) => {
-    // TASK TOGGLED - MAKE IT IRREVERSIBLE
-    // AS SOON AS IT IS TOGGLED, REMOVE IT FROM THE COLLECTION AND ADD IT TO A NEW COLLECTION ( which will be loaded within a new component, Complete.js, added to the bottom of the List.js page )
-
-    // FIRST  WAY - EASIER BUT PROBS NOT BEST
-    // 1) completedTasks separated
-    // 2) taskArr contains only non completed tasks
-    // 3) push taskArr to collection in db
-    // 4) push completedTasks to its own new cluser called <room>Completed
-
-    // SECOND WAY
-    // 1) Extract room from any element within taskArr
-    // 2) Do that on/send that to the server
-    // 3)
-
-    // THIS WORKS
-    // const pendingTasks = data.filter((el) => el.completed === false);
-    // const completedTasks = data.filter((el) => el.completed === true);
     io.emit("update_pending", data);
     console.log("PENDING TASKS:", data);
-    console.log("DATA 0 DOT ROOM:", data[0].room);
+    // console.log("DATA 0 DOT ROOM:", data[0].room);
+    if (data.length !== 0) {
+      collection.updateMany({ _id: data[0].room }, { $set: { tasks: data } });
+    }
+  });
 
-    // This works. Now just need to send all of this DATA to the database of the particular room.
-    // extract room data from array of objects
-
-    // UPDATE ALL THE TASKS FIRST AND THEN PULL THE COMPLETED ONES
-    collection.updateMany({ _id: data[0].room }, { $set: { tasks: data } });
-
-
-    // collection.updateMany(
-    //   { _id: data[0].room },
-    //   {
-    //     $pull: {
-    //       tasks: {
-    //         completed: true,
-    //       },
-    //     },
-    //   },
-    //   { multi: true }
-    // );
-
-    // TODO return updated db and send this as the new data for the "toggled task" event
-    // collection.find({ _id: ROOOOM }).toArray((err, res) => {
-    //   if (err) {
-    //     throw err;
-    //   }
-    //   const pendingTaskArr = res[0].tasks;
-
-    // collection.updateOne(
-    //   { _id: ROOOMComplete },
-    //   { $push: { tasks: taskObj } }
-    // );
-
-    // io.emit("toggled_task", data);
+  socket.on("completed_tasks", async (data) => {
+    const roomName = `${data[0].room}Complete`;
+    let result = await collection.findOne({ _id: `${roomName}` });
+    // console.log("mongoDB find collection:", result);
+    if (!result) {
+      await collection.insertOne({ _id: `${roomName}`, tasks: data });
+    }
+    io.emit("update_completed", data);
   });
 
   // socket.on("delete_task", (taskArr) => {

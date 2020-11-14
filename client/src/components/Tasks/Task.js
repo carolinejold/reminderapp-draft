@@ -4,17 +4,15 @@ import Divider from "@material-ui/core/Divider";
 import { socket } from "../sockets/sockets.js";
 import "./Task.css";
 
-const Task = ({ taskArr, setTaskArr, completedArr, setCompletedArr }) => {
+const Task = ({ taskArr }) => {
   // TODO how can i make this more robust - message_id?
   const toggleTask = (i) => {
     const currentTasks = [...taskArr];
     currentTasks[i].completed = true; // !currentTasks[i].completed;
-    // const completedTasks = await taskArr.filter((el) => el.completed === true);
+    const completedTasks = taskArr.filter((el) => el.completed === true);
     const pendingTasks = taskArr.filter((el) => el.completed === false);
-    setTaskArr(pendingTasks);
-    // setCompletedArr(completedTasks);
     socket.emit("pending_tasks", pendingTasks);
-    // socket.emit("complete_tasks", completedArr);
+    socket.emit("completed_tasks", completedTasks);
   };
 
   return (

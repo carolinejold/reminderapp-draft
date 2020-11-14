@@ -22,21 +22,16 @@ const Tasks = () => {
       setTaskArr(data);
     });
 
-    // socket.on("toggled_task", (data) => {
-    //   // console.log("toggled task data", data);
-    //   setTaskArr(data);
-    // });
+    socket.on("update_completed", (data) => {
+      setCompletedArr(data);
+    });
   }, []);
 
   return (
     <div className="tasks-container">
-      <Task
-        taskArr={taskArr}
-        setTaskArr={setTaskArr}
-        completedArr={completedArr}
-        setCompletedArr={setCompletedArr}
-      />
-      <Complete />
+      <Task taskArr={taskArr} />
+      <h3>--------- DIVIIIDDDERRRR -----------</h3>
+      <Complete completedArr={completedArr} />
     </div>
   );
 };
