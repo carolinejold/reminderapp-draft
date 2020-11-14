@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Divider from "@material-ui/core/Divider";
-
 import { socket } from "../sockets/sockets.js";
 import Task from "./Task.js";
 import Complete from "./Complete.js";
@@ -24,9 +22,9 @@ const Tasks = () => {
       setTaskArr(data);
     });
 
-    socket.on("update_completed", (data) => {
-      setCompletedArr((completedArr) => [...completedArr, data]);
-    });
+    // socket.on("update_completed", (data) => {
+    //   setCompletedArr((completedArr) => [...completedArr, data]);
+    // });
   }, []);
 
   return (

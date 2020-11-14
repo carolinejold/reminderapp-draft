@@ -9,10 +9,10 @@ const Task = ({ taskArr }) => {
   const toggleTask = (i) => {
     const currentTasks = [...taskArr];
     currentTasks[i].completed = true; // !currentTasks[i].completed;
-    const completedTasks = taskArr.filter((el) => el.completed === true);
+    // const completedTasks = taskArr.filter((el) => el.completed === true);
     const pendingTasks = taskArr.filter((el) => el.completed === false);
     socket.emit("pending_tasks", pendingTasks);
-    socket.emit("completed_tasks", completedTasks);
+    // socket.emit("completed_tasks", completedTasks);
   };
 
   return (

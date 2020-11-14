@@ -58,10 +58,18 @@ io.on("connect", (socket) => {
     const user = userJoin(socket.id, name, room);
     // console.log("User details, new_user, server", user);
     try {
-      let result = await collection.findOne({ _id: user.room });
-      // console.log("mongoDB find collection:", result);
-      if (!result) {
+      let pendingResult = await collection.findOne({ _id: user.room });
+      if (!pendingResult) {
         await collection.insertOne({ _id: user.room, tasks: [] });
+      }
+      // console.log("mongoDB find collection:", result);
+
+      let completedResult = await collection.findOne({
+        _id: `${user.room}Completed`,
+      });
+      // console.log("mongoDB find collection:", result);
+      if (!completedResult) {
+        await collection.insertOne({ _id: `${user.room}Completed`, tasks: [] });
       }
       socket.join(user.room);
 
@@ -105,32 +113,36 @@ io.on("connect", (socket) => {
         { _id: taskObj.room },
         { $push: { tasks: taskObj } }
       );
-      io.emit("server_message", taskObj);
+      io.to(taskObj.room).emit("server_message", taskObj);
     } catch (e) {
       console.error(e);
     }
   });
 
   socket.on("pending_tasks", (data) => {
-    io.emit("update_pending", data);
     console.log("PENDING TASKS:", data);
-    const roomName = `${data[0].room}Complete`;
-    // console.log("DATA 0 DOT ROOM:", data[0].room);
+    const originalRoom = data[0].room;
     if (data.length !== 0) {
-      collection.updateMany({ _id: data[0].room }, { $set: { tasks: data } });
+      collection.updateMany({ _id: originalRoom }, { $set: { tasks: data } });
     }
+    io.to(originalRoom).emit("update_pending", data);
+    // let result = await collection.findOne({ _id: user.room });
+    //   // console.log("mongoDB find collection:", result);
+    //   if (!result) {
+    //     await collection.insertOne({ _id: user.room, tasks: [] });
+    //   }
   });
 
-  socket.on("completed_tasks", async (data) => {
-    const roomName = `${data[0].room}Complete`;
-    let result = await collection.findOne({ _id: `${roomName}` });
-    // console.log("mongoDB find collection:", result);
-    if (!result) {
-      await collection.insertOne({ _id: `${roomName}`, tasks: data });
-    }
-    collection.updateMany({ _id: `${roomName}` }, { $set: { tasks: data } });
-    io.emit("update_completed", data);
-  });
+  // socket.on("completed_tasks", async (data) => {
+  //   const roomName = `${data[0].room}Complete`;
+  //   let result = await collection.findOne({ _id: roomName });
+  //   // console.log("mongoDB find collection:", result);
+  //   if (!result) {
+  //     await collection.insertOne({ _id: roomName, tasks: data });
+  //   }
+  //   collection.updateMany({ _id: roomName }, { $set: { tasks: data } });
+  //   io.emit("update_completed", data);
+  // });
 
   // socket.on("delete_task", (taskArr) => {
   //   io.emit("deleted_task", taskArr);
