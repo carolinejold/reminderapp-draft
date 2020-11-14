@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Divider from "@material-ui/core/Divider";
+
 import { socket } from "../sockets/sockets.js";
 import Task from "./Task.js";
 import Complete from "./Complete.js";
@@ -23,14 +25,14 @@ const Tasks = () => {
     });
 
     socket.on("update_completed", (data) => {
-      setCompletedArr(data);
+      setCompletedArr((completedArr) => [...completedArr, data]);
     });
   }, []);
 
   return (
     <div className="tasks-container">
       <Task taskArr={taskArr} />
-      <h3>--------- DIVIIIDDDERRRR -----------</h3>
+      <p className="tasks-divider">-- Completed Tasks --</p>
       <Complete completedArr={completedArr} />
     </div>
   );

@@ -114,6 +114,7 @@ io.on("connect", (socket) => {
   socket.on("pending_tasks", (data) => {
     io.emit("update_pending", data);
     console.log("PENDING TASKS:", data);
+    const roomName = `${data[0].room}Complete`;
     // console.log("DATA 0 DOT ROOM:", data[0].room);
     if (data.length !== 0) {
       collection.updateMany({ _id: data[0].room }, { $set: { tasks: data } });
@@ -127,6 +128,7 @@ io.on("connect", (socket) => {
     if (!result) {
       await collection.insertOne({ _id: `${roomName}`, tasks: data });
     }
+    collection.updateMany({ _id: `${roomName}` }, { $set: { tasks: data } });
     io.emit("update_completed", data);
   });
 

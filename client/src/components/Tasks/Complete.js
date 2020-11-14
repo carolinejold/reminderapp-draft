@@ -12,10 +12,9 @@ const Complete = ({ completedArr }) => {
             i={i}
             key={el.message_id}
             id={el.message_id}
-            className="task-div"
+            className="completed-div"
             style={{
               textDecoration: el.completed ? "line-through" : "",
-              order: el.completed ? "1" : "0",
             }}
             // onClick={() => toggleTask(i)}
           >
