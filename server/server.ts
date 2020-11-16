@@ -143,14 +143,14 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  socket.on("pending_tasks", (data) => {
+  socket.on("pending_tasks", (pendingTasks) => {
     // console.log("PENDING TASKS:", data);
-    const originalRoom: string = data[0].room;
+    const originalRoom: string = pendingTasks[0].room;
     try {
-      if (data.length !== 0) {
-        collection.updateMany({ _id: originalRoom }, { $set: { tasks: data } });
+      if (pendingTasks.length !== 0) {
+        collection.updateMany({ _id: originalRoom }, { $set: { tasks: pendingTasks } });
       }
-      io.to(originalRoom).emit("update_pending", data);
+      io.to(originalRoom).emit("update_pending", pendingTasks);
     } catch (e) {
       console.error(e);
     }

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import {queryString} from "query-string";
+import qs from 'query-string';
 import Form from "../Form/Form.js";
 import Tasks from "../Tasks/Tasks.js";
 import { socket } from "../sockets/sockets.js";
@@ -19,7 +19,7 @@ const List: React.FC = () => {
   const [room, setRoom] = useState<string | null>("");
 
   useEffect(() => {
-    const { name, room }: qsTypes = queryString.parse(
+    const { name, room }: qsTypes = qs.parse(
       window.location.search
     );
     setRoom(room);

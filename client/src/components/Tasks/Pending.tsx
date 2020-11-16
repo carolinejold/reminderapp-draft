@@ -1,22 +1,35 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-import "./Complete.css";
+import { socket } from "../sockets/sockets.js";
+import { TaskObjType } from "../../types/types";
+import "./Pending.css";
 
-const Complete = ({ completedArr }) => {
+const Task: React.FC<{ pendingArr: Array<TaskObjType> }> = ({ pendingArr }) => {
+  // TODO how can i make this more robust - message_id?
+  const toggleTask = (i: number) => {
+    const currentTasks = [...pendingArr];
+    currentTasks[i].completed = true; // !currentTasks[i].completed;
+    // const completedTasks = taskArr.filter((el) => el.completed === true);
+    const pendingTasks = pendingArr.filter((el) => el.completed === false);
+    socket.emit("pending_tasks", pendingTasks);
+    // socket.emit("completed_tasks", completedTasks);
+  };
+
   return (
-    <div className="completed-container">
-      {completedArr.map((el, i) => {
+    <div className="task-container">
+      {pendingArr.map((el, i) => {
         return (
           <div
             i={i}
             key={el.message_id}
             id={el.message_id}
-            className="completed-div"
+            className="task-div"
             style={{
               textDecoration: el.completed ? "line-through" : "",
+              order: el.completed ? "1" : "0",
             }}
-            // onClick={() => toggleTask(i)}
+            onClick={() => toggleTask(i)}
           >
             <p>{el.task}</p>
             <br></br>
@@ -35,7 +48,6 @@ const Complete = ({ completedArr }) => {
                   width: "0.5em",
                   height: "3em",
                   fontSize: "0.7em",
-                  fontWeight: "400",
                 }}
                 variant="outlined"
                 color="default"
@@ -52,4 +64,4 @@ const Complete = ({ completedArr }) => {
   );
 };
 
-export default Complete;
+export default Task;
