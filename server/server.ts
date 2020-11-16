@@ -1,5 +1,3 @@
-export {};
-
 const express = require("express");
 const http = require("http");
 const socketio = require("socket.io");
@@ -13,8 +11,8 @@ const MongoClient = require("mongodb").MongoClient;
 import { Socket } from "socket.io";
 
 // const users = require("./utils/index.js").users;
-const formatMessage = require("./utils/index.js");
-import { TaskObjType, UserType } from "./types/types";
+const formatMessage = require("./utils/index.ts");
+import { TaskObjType, UserType, DocumentType } from "./types/types";
 
 // const userJoin = require("./utils/index.js");
 
@@ -37,6 +35,7 @@ const client: mongo.MongoClient = new MongoClient(
 );
 
 let collection: any;
+console.log('THIS IS COLLECTION', collection);
 
 // PORT
 const port = process.env.PORT || 5000;
@@ -50,14 +49,13 @@ server.listen(port, async () => {
   }
 });
 
-// Helper Functions
-
-const users: Array<object> = [];
-const userJoin = (user_id: string, name: string, room: string): UserType => {
+// Helper function
+const users: Array<UserType> = [];
+const userJoin = (user_id: string, name: string, list: string): UserType => {
   const user: UserType = {
     user_id,
     name,
-    room,
+    list,
   };
   users.push(user);
   return user;
@@ -66,86 +64,76 @@ const userJoin = (user_id: string, name: string, room: string): UserType => {
 // SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connect", (socket: Socket) => {
   // console.log("CONNECTED TO SERVER", socket.id);
-  socket.on("new_user", async ({ name, room }) => {
-    const user: UserType = userJoin(socket.id, name, room);
-    // console.log("User details, new_user, server", user);
+  socket.on("new_user", async ({ name, list }) => {
+    const user: UserType = userJoin(socket.id, name, list);
     try {
-      let pendingResult = await collection.findOne({ _id: user.room });
+      // 1. Find pending tasks list from DB on new_user, create one if doesn't exist
+      const pendingDocument: string = user.list;
+      let pendingResult: DocumentType = await collection.findOne({ _id: pendingDocument });
       if (!pendingResult) {
-        await collection.insertOne({ _id: user.room, tasks: [] });
+        await collection.insertOne({ _id: pendingDocument, tasks: [] });
       }
-      // console.log("mongoDB find collection:", result);
-      const completedName: string = `${user.room}Completed`;
-      let completedResult = await collection.findOne({
-        _id: completedName,
+      const pendingData = pendingResult.tasks;
+      io.to(user.list).emit("show_pending_tasks", pendingData);
+
+      // 2. Find completed tasks list from DB on new_user, create one if doesn't exist
+      const completedDocument: string = `${user.list}Completed`;
+      let completedResult: DocumentType = await collection.findOne({
+        _id: completedDocument,
       });
-      // console.log("mongoDB find collection:", result);
       if (!completedResult) {
         await collection.insertOne({
-          _id: completedName,
+          _id: completedDocument,
           tasks: [],
         });
       }
-      socket.join(user.room);
+      const completedData = completedResult.tasks;
+      io.to(user.list).emit("show_completed_tasks", completedData);
 
-      collection.find({ _id: user.room }).toArray((e: object, res: []) => {
-        if (e) {
-          throw e;
-        }
-        const dbTasksPending: TaskObjType = res[0].tasks; // this is task list from db
-        // console.log("RES FROM LINE 73", dbTasks);
-        io.to(user.room).emit("showDbTasksPending", dbTasksPending);
-      });
-
-      collection.find({ _id: completedName }).toArray((e: object, res: []) => {
-        if (e) {
-          throw e;
-        }
-        const dbTasks: TaskObjType = res[0].tasks; // this is task list from db
-        // console.log("RES FROM LINE 73", dbTasks);
-        io.to(user.room).emit("showDbTasks", dbTasks);
-      });
+      // User joins list 'room'
+      socket.join(user.list);      
 
       socket.emit(
         "welcome_user",
-        `Welcome to the ${user.room} list, ${user.name}!`
+        `Welcome to the ${user.list} list, ${user.name}!`
       );
 
-      io.to(user.room).emit(
+      io.to(user.list).emit(
         "user_joined",
-        `${user.name} joined the ${user.room} list!`
+        `${user.name} joined the ${user.list} list!`
       );
 
       // socket.activeRoom = room;
-    } catch (e) {
+    } catch(e) {
       console.error(e);
     }
   });
 
   socket.on("client_message", (task) => {
     // console.log("USERS ARRAY INSIDE", users);
-    const messageUser: any = users.find((el) => el.user_id === socket.id);
+    const messageUser: TaskObjType | any = users.length !== 0 ? users.find((el) => el.user_id === socket.id) : null;
     const taskObj: TaskObjType = formatMessage(
       messageUser.user_id,
       messageUser.name,
-      messageUser.room,
+      messageUser.list,
       task
     );
     try {
       // console.log("TASKOBJ:", taskObj);
       collection.updateOne(
-        { _id: taskObj.room },
+        { _id: taskObj.list },
         { $push: { tasks: taskObj } }
       );
-      io.to(taskObj.room).emit("server_message", taskObj);
+      io.to(taskObj.list).emit("server_message", taskObj);
     } catch (e) {
       console.error(e);
     }
   });
 
+  // REWORK THIS
   socket.on("pending_tasks", (pendingTasks) => {
     // console.log("PENDING TASKS:", data);
-    const originalRoom: string = pendingTasks[0].room;
+    const originalRoom: string = pendingTasks[0].list;
     try {
       if (pendingTasks.length !== 0) {
         collection.updateMany({ _id: originalRoom }, { $set: { tasks: pendingTasks } });

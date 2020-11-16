@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactElement } from "react";
 import { Link } from "react-router-dom";
 import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import qs from 'query-string';
+import qs from "query-string";
 import Form from "../Form/Form.js";
 import Tasks from "../Tasks/Tasks.js";
 import { socket } from "../sockets/sockets.js";
 import { qsTypes } from "../../types/types";
 import "./List.css";
 
-const List: React.FC = () => {
-  const [welcomeMessage, setWelcomeMessage] = useState<string | null>("");
-  const [userJoinedMessages, setUserJoinedMessages] = useState<Array<
-    string
-  >>([]);
-  const [name, setName] = useState<string | null>("");
-  const [room, setRoom] = useState<string | null>("");
+const List: React.FC = (): ReactElement => {
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null | any>("");
+  const [userJoinedMessages, setUserJoinedMessages] = useState<Array<string>>(
+    []
+  );
 
   useEffect(() => {
-    const { name, room }: qsTypes = qs.parse(
-      window.location.search
-    );
-    setRoom(room);
-    setName(name);
+    const { name, list }: qsTypes = qs.parse(window.location.search);
 
-    socket.emit("new_user", { name, room });
+    socket.emit("new_user", { name, list });
 
     socket.on("welcome_user", (data: string) => {
       setWelcomeMessage(data);
@@ -65,8 +59,8 @@ const List: React.FC = () => {
         </div>
         <br></br>
         {/* <p>{disconnectMessage}</p> */}
-        <Form name={name} room={room} />
-        <Tasks name={name} />
+        <Form />
+        <Tasks />
         <br></br>
         <Link to={`/`}>
           <Button>Go back & choose another list</Button>

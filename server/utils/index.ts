@@ -7,14 +7,14 @@ import { TaskObjType } from "../types/types.js";
 const formatMessage = (
   user_id: string,
   name: string,
-  room: string,
+  list: string,
   task: string
 ): TaskObjType => {
   return {
     user_id,
     message_id: uuidv4(),
     name,
-    room,
+    list,
     task,
     date: moment().format("DD-MM-YYYY"),
     time: moment().format("HH:mm"),

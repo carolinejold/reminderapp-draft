@@ -9,7 +9,7 @@ const Complete: React.FC<{ completedArr: Array<TaskObjType> }> = ({
 }) => {
   return (
     <div className="completed-container">
-      {completedArr.map((el, i) => {
+      {completedArr.map((el) => {
         return (
           <div
             key={el.message_id}

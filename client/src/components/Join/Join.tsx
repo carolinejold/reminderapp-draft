@@ -7,7 +7,7 @@ import "./Join.css";
 
 const Join: React.FC = () => {
   const [name, setName] = useState<string | null>("");
-  const [room, setRoom] = useState<string | null>("");
+  const [list, setList] = useState<string | null>("");
   const [errMessage, setErrMessage] = useState<string | null>("");
 
   const enterDetails = (e: React.SyntheticEvent) => {
@@ -15,8 +15,8 @@ const Join: React.FC = () => {
     setErrMessage("Please enter a name and a list to continue");
   };
 
-  const onChangeRoom: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setRoom(e.target.value);
+  const onChangeList: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setList(e.target.value);
   };
 
   const onChangeName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -49,7 +49,7 @@ const Join: React.FC = () => {
             placeholder="List"
             className="join-input"
             type="text"
-            onChange={onChangeRoom}
+            onChange={onChangeList}
           />
         </div>
         <small>
@@ -57,8 +57,8 @@ const Join: React.FC = () => {
         </small>
 
         <Link
-          onClick={(e: any) => (!name || !room ? enterDetails(e) : null)}
-          to={`/list?room=${room}&name=${name}`}
+          onClick={(e: any) => (!name || !list ? enterDetails(e) : null)}
+          to={`/list?room=${list}&name=${name}`}
         >
           <Button variant="outlined" color="default" type="submit">
             Submit
@@ -68,7 +68,7 @@ const Join: React.FC = () => {
         <br></br>
         <small
           style={{
-            visibility: !name || !room ? "visible" : "hidden",
+            visibility: !name || !list ? "visible" : "hidden",
             color: "red",
           }}
         >
@@ -80,5 +80,3 @@ const Join: React.FC = () => {
 };
 
 export default Join;
-
-// const { name, room } = queryString.parse(location.search);

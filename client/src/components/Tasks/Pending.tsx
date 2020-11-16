@@ -21,13 +21,12 @@ const Task: React.FC<{ pendingArr: Array<TaskObjType> }> = ({ pendingArr }) => {
       {pendingArr.map((el, i) => {
         return (
           <div
-            i={i}
+            data-i={i}
             key={el.message_id}
             id={el.message_id}
             className="task-div"
             style={{
               textDecoration: el.completed ? "line-through" : "",
-              order: el.completed ? "1" : "0",
             }}
             onClick={() => toggleTask(i)}
           >
