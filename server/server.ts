@@ -12,7 +12,7 @@ import { Socket } from "socket.io";
 
 // const users = require("./utils/index.js").users;
 const formatMessage = require("./utils/index.js");
-import { TaskObjInt } from "./types/types.js";
+import { TaskObjType, UserType } from "./types/types.js";
 
 // const userJoin = require("./utils/index.js");
 
@@ -50,11 +50,6 @@ server.listen(port, async () => {
 });
 
 // Helper Functions
-interface UserType {
-  user_id: string;
-  name: string;
-  room: string;
-}
 
 const users: Array<object> = [];
 const userJoin = (user_id: string, name: string, room: string): UserType => {
@@ -68,76 +63,75 @@ const userJoin = (user_id: string, name: string, room: string): UserType => {
 };
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
-interface NewUserType {
-  name: string;
-  room: string;
-}
-
 io.on("connect", (socket: Socket) => {
   // console.log("CONNECTED TO SERVER", socket.id);
-  socket.on(
-    "new_user",
-    async ({ name, room }: NewUserType): Promise<T> => {
-      const user = userJoin(socket.id, name, room);
-      // console.log("User details, new_user, server", user);
-      try {
-        let pendingResult = await collection.findOne({ _id: user.room });
-        if (!pendingResult) {
-          await collection.insertOne({ _id: user.room, tasks: [] });
-        }
-        // console.log("mongoDB find collection:", result);
-
-        let completedResult = await collection.findOne({
-          _id: `${user.room}Completed`,
-        });
-        // console.log("mongoDB find collection:", result);
-        if (!completedResult) {
-          await collection.insertOne({
-            _id: `${user.room}Completed`,
-            tasks: [],
-          });
-        }
-        socket.join(user.room);
-
-        collection
-          .find({ _id: user.room })
-          .toArray((err: any, res: Array<T>) => {
-            if (err) {
-              throw err;
-            }
-            const dbTasks: Array<T> = res[0].tasks; // this is task list from db
-            // console.log("RES FROM LINE 73", dbTasks);
-            io.to(user.room).emit("showDbTasks", dbTasks);
-          });
-
-        socket.emit(
-          "welcome_user",
-          `Welcome to the ${user.room} list, ${user.name}!`
-        );
-
-        io.to(user.room).emit(
-          "user_joined",
-          `${user.name} joined the ${user.room} list!`
-        );
-
-        // socket.activeRoom = room;
-      } catch (e) {
-        console.error(e);
+  socket.on("new_user", async ({ name, room }) => {
+    const user: UserType = userJoin(socket.id, name, room);
+    // console.log("User details, new_user, server", user);
+    try {
+      let pendingResult = await collection.findOne({ _id: user.room });
+      if (!pendingResult) {
+        await collection.insertOne({ _id: user.room, tasks: [] });
       }
-    }
-  );
+      // console.log("mongoDB find collection:", result);
+      const completedName: string = `${user.room}Completed`;
+      let completedResult = await collection.findOne({
+        _id: completedName,
+      });
+      // console.log("mongoDB find collection:", result);
+      if (!completedResult) {
+        await collection.insertOne({
+          _id: completedName,
+          tasks: [],
+        });
+      }
+      socket.join(user.room);
 
-  socket.on("client_message", (task: string) => {
+      collection.find({ _id: user.room }).toArray((e: object, res: []) => {
+        if (e) {
+          throw e;
+        }
+        const dbTasks: TaskObjType = res[0].tasks; // this is task list from db
+        // console.log("RES FROM LINE 73", dbTasks);
+        io.to(user.room).emit("showDbTasks", dbTasks);
+      });
+
+      collection.find({ _id: completedName }).toArray((e: object, res: []) => {
+        if (e) {
+          throw e;
+        }
+        const dbTasks: TaskObjType = res[0].tasks; // this is task list from db
+        // console.log("RES FROM LINE 73", dbTasks);
+        io.to(user.room).emit("showDbTasks", dbTasks);
+      });
+
+      socket.emit(
+        "welcome_user",
+        `Welcome to the ${user.room} list, ${user.name}!`
+      );
+
+      io.to(user.room).emit(
+        "user_joined",
+        `${user.name} joined the ${user.room} list!`
+      );
+
+      // socket.activeRoom = room;
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  socket.on("client_message", (task) => {
     // console.log("USERS ARRAY INSIDE", users);
-    const messageUser = users.find((el) => el.user_id === socket.id);
-    const taskObj: TaskObjInt = formatMessage(
+    const messageUser: any = users.find((el) => el.user_id === socket.id);
+    const taskObj: TaskObjType = formatMessage(
       messageUser.user_id,
       messageUser.name,
       messageUser.room,
       task
     );
     try {
-      console.log("TASKOBJ:", taskObj);
+      // console.log("TASKOBJ:", taskObj);
       collection.updateOne(
         { _id: taskObj.room },
         { $push: { tasks: taskObj } }
@@ -148,13 +142,18 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  socket.on("pending_tasks", (data: Array<object>) => {
-    console.log("PENDING TASKS:", data);
-    const originalRoom = data[0].room;
-    if (data.length !== 0) {
-      collection.updateMany({ _id: originalRoom }, { $set: { tasks: data } });
+  socket.on("pending_tasks", (data) => {
+    // console.log("PENDING TASKS:", data);
+    const originalRoom: string = data[0].room;
+    try {
+      if (data.length !== 0) {
+        collection.updateMany({ _id: originalRoom }, { $set: { tasks: data } });
+      }
+      io.to(originalRoom).emit("update_pending", data);
+    } catch (e) {
+      console.error(e);
     }
-    io.to(originalRoom).emit("update_pending", data);
+
     // let result = await collection.findOne({ _id: user.room });
     //   // console.log("mongoDB find collection:", result);
     //   if (!result) {

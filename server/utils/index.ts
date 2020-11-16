@@ -1,25 +1,15 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+import { TaskObjType } from "../types/types.js";
 
 // const users = [];
-
-interface ObjectType {
-  user_id: string;
-  message_id: string | number;
-  name: string;
-  room: string;
-  task: string;
-  date: string;
-  time: string;
-  completed: boolean;
-}
 
 const formatMessage = (
   user_id: string,
   name: string,
   room: string,
   task: string
-): ObjectType => {
+): TaskObjType => {
   return {
     user_id,
     message_id: uuidv4(),

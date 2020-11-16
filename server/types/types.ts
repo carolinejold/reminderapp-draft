@@ -1,4 +1,4 @@
-export interface TaskObjInt {
+export interface TaskObjType {
   user_id: string;
   message_id: string;
   name: string;
@@ -7,4 +7,10 @@ export interface TaskObjInt {
   date: string;
   time: string;
   completed: boolean;
+}
+
+export interface UserType {
+  user_id: string;
+  name: string;
+  room: string;
 }
