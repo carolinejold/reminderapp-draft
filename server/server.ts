@@ -14,7 +14,7 @@ import { Socket } from "socket.io";
 
 // const users = require("./utils/index.js").users;
 const formatMessage = require("./utils/index.js");
-import { TaskObjType, UserType } from "./types/types.js";
+import { TaskObjType, UserType } from "./types/types";
 
 // const userJoin = require("./utils/index.js");
 

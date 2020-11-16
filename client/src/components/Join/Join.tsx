@@ -5,14 +5,22 @@ import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import "./Join.css";
 
-const Join = () => {
-  const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
-  const [errMessage, setErrMessage] = useState("");
+const Join: React.FC = () => {
+  const [name, setName] = useState<string | null>("");
+  const [room, setRoom] = useState<string | null>("");
+  const [errMessage, setErrMessage] = useState<string | null>("");
 
-  const enterDetails = (e) => {
+  const enterDetails = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setErrMessage("Please enter a name and a list to continue");
+  };
+
+  const onChangeRoom: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setRoom(e.target.value);
+  };
+
+  const onChangeName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setName(e.target.value);
   };
 
   return (
@@ -32,7 +40,7 @@ const Join = () => {
             placeholder="Name"
             className="join-input"
             type="text"
-            onChange={(e) => setName(e.target.value)}
+            onChange={onChangeName}
           />
         </div>
         <div>
@@ -41,7 +49,7 @@ const Join = () => {
             placeholder="List"
             className="join-input"
             type="text"
-            onChange={(e) => setRoom(e.target.value)}
+            onChange={onChangeRoom}
           />
         </div>
         <small>
@@ -49,7 +57,7 @@ const Join = () => {
         </small>
 
         <Link
-          onClick={(e) => (!name || !room ? enterDetails(e) : null)}
+          onClick={(e: any) => (!name || !room ? enterDetails(e) : null)}
           to={`/list?room=${room}&name=${name}`}
         >
           <Button variant="outlined" color="default" type="submit">
