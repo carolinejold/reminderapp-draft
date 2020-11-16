@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../sockets/sockets.js";
-import Task from "./Task.js";
+import Pending from "./Pending.js";
 import Complete from "./Complete.js";
 import "./Tasks.css";
 
 const Tasks = () => {
-  const [taskArr, setTaskArr] = useState([]);
+  const [pendingArr, setPendingArr] = useState([]);
   const [completedArr, setCompletedArr] = useState([]);
 
   useEffect(() => {
-    socket.on("showDbTasks", (dbTasks) => {
-      setTaskArr(dbTasks);
+    socket.on("showDbTasksPending", (dbTasksPending) => {
+      setPendingArr(dbTasksPending);
     });
 
     socket.on("server_message", (taskObj) => {
-      console.log("server message event received on frontend", taskObj);
-      setTaskArr((taskArr) => [...taskArr, taskObj]);
+      // console.log("server message event received on frontend", taskObj);
+      setPendingArr((pendingArr) => [...pendingArr, taskObj]);
     });
 
     socket.on("update_pending", (data) => {
@@ -29,7 +29,7 @@ const Tasks = () => {
 
   return (
     <div className="tasks-container">
-      <Task taskArr={taskArr} />
+      <Pending pendingArr={pendingArr} />
       <p className="tasks-divider">-- Completed Tasks --</p>
       <Complete completedArr={completedArr} />
     </div>

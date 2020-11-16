@@ -8,6 +8,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+import * as mongo from "mongodb";
+const MongoClient = require("mongodb").MongoClient;
 import { Socket } from "socket.io";
 
 // const users = require("./utils/index.js").users;
@@ -25,17 +27,16 @@ const dbUsername: string | undefined = process.env.DB_USERNAME;
 const dbPassword: string | undefined = process.env.DB_PASSWORD;
 const dbName: string | undefined = process.env.DB_NAME;
 
-const MongoClient = require("mongodb").MongoClient;
 const uri: string = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 // TODO add client.close at some point?
 
-const client = new MongoClient(
+const client: mongo.MongoClient = new MongoClient(
   uri,
   { useUnifiedTopology: true },
   { useNewUrlParser: true }
 );
 
-let collection: Array<object> | any;
+let collection: any;
 
 // PORT
 const port = process.env.PORT || 5000;
@@ -45,7 +46,7 @@ server.listen(port, async () => {
     collection = client.db("remindersdb").collection("tasks");
     console.log(`Server running on port ${port}`);
   } catch (e) {
-    console.error(e);
+    console.error('Unable to connect to MongoDB', e);
   }
 });
 
@@ -91,9 +92,9 @@ io.on("connect", (socket: Socket) => {
         if (e) {
           throw e;
         }
-        const dbTasks: TaskObjType = res[0].tasks; // this is task list from db
+        const dbTasksPending: TaskObjType = res[0].tasks; // this is task list from db
         // console.log("RES FROM LINE 73", dbTasks);
-        io.to(user.room).emit("showDbTasks", dbTasks);
+        io.to(user.room).emit("showDbTasksPending", dbTasksPending);
       });
 
       collection.find({ _id: completedName }).toArray((e: object, res: []) => {
@@ -173,6 +174,11 @@ io.on("connect", (socket: Socket) => {
   // });
 
   // socket.on("delete_task", (taskArr) => {
+  // somrhing between this:
+  // collection.remove({"_id": new mongodb.ObjectId(id)});
+  // and this:
+  // collection.remove({ _id: roomName }, { $set: { tasks: data } });
+
   //   io.emit("deleted_task", taskArr);
   // });
 

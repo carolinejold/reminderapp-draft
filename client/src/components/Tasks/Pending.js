@@ -2,22 +2,22 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import { socket } from "../sockets/sockets.js";
-import "./Task.css";
+import "./Pending.css";
 
-const Task = ({ taskArr }) => {
+const Task = ({ pendingArr }) => {
   // TODO how can i make this more robust - message_id?
   const toggleTask = (i) => {
-    const currentTasks = [...taskArr];
+    const currentTasks = [...pendingArr];
     currentTasks[i].completed = true; // !currentTasks[i].completed;
     // const completedTasks = taskArr.filter((el) => el.completed === true);
-    const pendingTasks = taskArr.filter((el) => el.completed === false);
+    const pendingTasks = pendingArr.filter((el) => el.completed === false);
     socket.emit("pending_tasks", pendingTasks);
     // socket.emit("completed_tasks", completedTasks);
   };
 
   return (
     <div className="task-container">
-      {taskArr.map((el, i) => {
+      {pendingArr.map((el, i) => {
         return (
           <div
             i={i}
