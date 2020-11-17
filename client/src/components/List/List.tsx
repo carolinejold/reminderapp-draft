@@ -4,9 +4,9 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import qs from "query-string";
-import Form from "../Form/Form.js";
-import Tasks from "../Tasks/Tasks.js";
-import { socket } from "../sockets/sockets.js";
+import Form from "../Form/Form";
+import Tasks from "../Tasks/Tasks";
+import { socket } from "../sockets/sockets";
 import { qsTypes } from "../../types/types";
 import "./List.css";
 
@@ -18,6 +18,7 @@ const List: React.FC = (): ReactElement => {
 
   useEffect(() => {
     const { name, list }: qsTypes = qs.parse(window.location.search);
+    console.log(name, list);
 
     socket.emit("new_user", { name, list });
 

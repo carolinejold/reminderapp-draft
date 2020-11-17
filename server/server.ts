@@ -35,7 +35,6 @@ const client: mongo.MongoClient = new MongoClient(
 );
 
 let collection: any;
-console.log('THIS IS COLLECTION', collection);
 
 // PORT
 const port = process.env.PORT || 5000;
@@ -43,9 +42,11 @@ server.listen(port, async () => {
   try {
     await client.connect();
     collection = client.db("remindersdb").collection("tasks");
+    // console.log(collection)
+
     console.log(`Server running on port ${port}`);
   } catch (e) {
-    console.error('Unable to connect to MongoDB', e);
+    console.error("Unable to connect to MongoDB", e);
   }
 });
 
@@ -69,12 +70,16 @@ io.on("connect", (socket: Socket) => {
     try {
       // 1. Find pending tasks list from DB on new_user, create one if doesn't exist
       const pendingDocument: string = user.list;
-      let pendingResult: DocumentType = await collection.findOne({ _id: pendingDocument });
+      // console.log('PENDING DOC', pendingDocument)
+      let pendingResult: DocumentType = await collection.findOne({
+        _id: pendingDocument,
+      });
       if (!pendingResult) {
         await collection.insertOne({ _id: pendingDocument, tasks: [] });
+        pendingResult = await collection.findOne({ _id: pendingDocument });
       }
-      const pendingData = pendingResult.tasks;
-      io.to(user.list).emit("show_pending_tasks", pendingData);
+      console.log(pendingResult.tasks);
+      io.to(user.list).emit("show_pending_tasks", pendingResult.tasks);
 
       // 2. Find completed tasks list from DB on new_user, create one if doesn't exist
       const completedDocument: string = `${user.list}Completed`;
@@ -91,7 +96,7 @@ io.on("connect", (socket: Socket) => {
       io.to(user.list).emit("show_completed_tasks", completedData);
 
       // User joins list 'room'
-      socket.join(user.list);      
+      socket.join(user.list);
 
       socket.emit(
         "welcome_user",
@@ -104,14 +109,16 @@ io.on("connect", (socket: Socket) => {
       );
 
       // socket.activeRoom = room;
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   });
 
   socket.on("client_message", (task) => {
     // console.log("USERS ARRAY INSIDE", users);
-    const messageUser: TaskObjType | any = users.length !== 0 ? users.find((el) => el.user_id === socket.id) : null;
+    const messageUser: TaskObjType | any = users.find(
+      (el) => el.user_id === socket.id
+    );
     const taskObj: TaskObjType = formatMessage(
       messageUser.user_id,
       messageUser.name,
@@ -132,22 +139,37 @@ io.on("connect", (socket: Socket) => {
 
   // REWORK THIS
   socket.on("pending_tasks", (pendingTasks) => {
-    // console.log("PENDING TASKS:", data);
-    const originalRoom: string = pendingTasks[0].list;
+    const list = pendingTasks[0].list
     try {
       if (pendingTasks.length !== 0) {
-        collection.updateMany({ _id: originalRoom }, { $set: { tasks: pendingTasks } });
+        collection.updateOne(
+          { _id: pendingTasks[0].list },
+          { $set: { tasks: pendingTasks } }
+        );
+        io.to(list).emit("update_pending", pendingTasks);
       }
-      io.to(originalRoom).emit("update_pending", pendingTasks);
     } catch (e) {
       console.error(e);
     }
+  });
 
-    // let result = await collection.findOne({ _id: user.room });
-    //   // console.log("mongoDB find collection:", result);
-    //   if (!result) {
-    //     await collection.insertOne({ _id: user.room, tasks: [] });
-    //   }
+  socket.on("completed_tasks", (completedTasks) => {
+    const list = completedTasks[0].list
+    const listName = `${completedTasks[0].list}Complete`;
+    try {
+      if (completedTasks.length !== 0) {
+        collection.updateOne(
+          { _id: listName },
+          { $set: { tasks: completedTasks } }
+        );
+      }
+      io.to(list).emit(
+        "update_completed",
+        completedTasks
+      );
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   // socket.on("completed_tasks", async (data) => {

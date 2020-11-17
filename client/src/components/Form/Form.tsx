@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { socket } from "../sockets/sockets.js";
+import { socket } from "../sockets/sockets";
 import "./Form.css";
 
 const Form = () => {
@@ -14,7 +14,7 @@ const Form = () => {
   };
 
   const preventSubmit = (e: React.SyntheticEvent) => {
-    !task || / {2,}/gm.test(task) ? e.preventDefault() : null;
+    return !task || / {2,}/gm.test(task) ? e.preventDefault() : null;
   };
 
   const handleSubmit = (e: React.SyntheticEvent) => {

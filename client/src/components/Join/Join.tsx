@@ -58,7 +58,7 @@ const Join: React.FC = () => {
 
         <Link
           onClick={(e: any) => (!name || !list ? enterDetails(e) : null)}
-          to={`/list?room=${list}&name=${name}`}
+          to={`/list?list=${list}&name=${name}`}
         >
           <Button variant="outlined" color="default" type="submit">
             Submit

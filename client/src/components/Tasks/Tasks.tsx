@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../sockets/sockets.js";
-import Pending from "./Pending.js";
-import Complete from "./Complete.js";
+import { socket } from "../sockets/sockets";
+import Pending from "./Pending";
+import Complete from "./Complete";
 import { TaskObjType } from "../../types/types";
 import "./Tasks.css";
 
@@ -12,6 +12,7 @@ const Tasks: React.FC = () => {
   useEffect(() => {
     socket.on("show_pending_tasks", (pendingData: Array<TaskObjType>) => {
       setPendingArr(pendingData);
+      console.log("PENDINGINGN ARRAYY:", pendingArr);
     });
 
     socket.on("show_completed_tasks", (completedData: Array<TaskObjType>) => {
@@ -27,9 +28,9 @@ const Tasks: React.FC = () => {
       setPendingArr(pendingTasks);
     });
 
-    // socket.on("update_completed", (data) => {
-    //   setCompletedArr((completedArr) => [...completedArr, data]);
-    // });
+    socket.on("update_completed", (completedTasks: Array<TaskObjType>) => {
+      setCompletedArr(completedTasks);
+    });
   }, []);
 
   return (

@@ -1,34 +1,55 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-import { socket } from "../sockets/sockets.js";
+import { socket } from "../sockets/sockets";
 import { TaskObjType } from "../../types/types";
 import "./Pending.css";
 
-const Task: React.FC<{ pendingArr: Array<TaskObjType> }> = ({ pendingArr }) => {
+const Task: React.FC<{
+  pendingArr: Array<TaskObjType>;
+}> = ({ pendingArr }) => {
   // TODO how can i make this more robust - message_id?
-  const toggleTask = (i: number) => {
-    const currentTasks = [...pendingArr];
-    currentTasks[i].completed = true; // !currentTasks[i].completed;
-    // const completedTasks = taskArr.filter((el) => el.completed === true);
-    const pendingTasks = pendingArr.filter((el) => el.completed === false);
+  const toggleTask = (id: string) => {
+    const pendingTasks: Array<TaskObjType> = [];
+    const completedTasks: Array<TaskObjType> = [];
+    const newArray = pendingArr.map((el) => {
+      if (el.message_id !== id) {
+        return el;
+      } else {
+        return {
+          user_id: el.user_id,
+          message_id: el.message_id,
+          name: el.name,
+          list: el.list,
+          task: el.task,
+          date: el.date,
+          time: el.time,
+          completed: true,
+        };
+      }
+    });
+
+    newArray.forEach((el) => {
+      el.completed === true ? completedTasks.push(el) : pendingTasks.push(el);
+    });
+    // const pendingTasks = pendingArr.filter(el => el.message_id !== id);
+    // const completedTask = pendingArr.find((el) => el.message_id !== id);
     socket.emit("pending_tasks", pendingTasks);
-    // socket.emit("completed_tasks", completedTasks);
+    socket.emit("completed_tasks", completedTasks);
   };
 
   return (
     <div className="task-container">
-      {pendingArr.map((el, i) => {
+      {pendingArr.map((el) => {
         return (
           <div
-            data-i={i}
             key={el.message_id}
             id={el.message_id}
             className="task-div"
             style={{
               textDecoration: el.completed ? "line-through" : "",
             }}
-            onClick={() => toggleTask(i)}
+            onClick={() => toggleTask(el.message_id)}
           >
             <p>{el.task}</p>
             <br></br>
