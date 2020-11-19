@@ -6,6 +6,7 @@ export interface CollectionType {
 export interface DocumentType {
   _id: string;
   tasks: Array<TaskObjType>;
+  completed: Array<TaskObjType>;
 }
 
 export interface UserType {

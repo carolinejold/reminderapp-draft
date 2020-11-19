@@ -7,11 +7,21 @@ import "./Pending.css";
 
 const Task: React.FC<{
   pendingArr: Array<TaskObjType>;
+  setPendingArr: React.Dispatch<React.SetStateAction<TaskObjType[]>>;
 }> = ({ pendingArr }) => {
   // TODO how can i make this more robust - message_id?
   const toggleTask = (id: string) => {
     const pendingTasks: Array<TaskObjType> = [];
-    const completedTasks: Array<TaskObjType> = [];
+    let completedTask: TaskObjType = {
+      user_id: "",
+      message_id: "",
+      name: "",
+      list: "",
+      task: "",
+      date: "",
+      time: "",
+      completed: false,
+    };
     const newArray = pendingArr.map((el) => {
       if (el.message_id !== id) {
         return el;
@@ -30,12 +40,16 @@ const Task: React.FC<{
     });
 
     newArray.forEach((el) => {
-      el.completed === true ? completedTasks.push(el) : pendingTasks.push(el);
+      if (el.completed) {
+        completedTask = el;
+      } else {
+        pendingTasks.push(el);
+      }
     });
     // const pendingTasks = pendingArr.filter(el => el.message_id !== id);
     // const completedTask = pendingArr.find((el) => el.message_id !== id);
     socket.emit("pending_tasks", pendingTasks);
-    socket.emit("completed_tasks", completedTasks);
+    socket.emit("completed_task", completedTask);
   };
 
   return (

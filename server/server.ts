@@ -75,25 +75,15 @@ io.on("connect", (socket: Socket) => {
         _id: pendingDocument,
       });
       if (!pendingResult) {
-        await collection.insertOne({ _id: pendingDocument, tasks: [] });
+        await collection.insertOne({
+          _id: pendingDocument,
+          tasks: [],
+          completed: [],
+        });
         pendingResult = await collection.findOne({ _id: pendingDocument });
       }
-      console.log(pendingResult.tasks);
-      io.to(user.list).emit("show_pending_tasks", pendingResult.tasks);
-
-      // 2. Find completed tasks list from DB on new_user, create one if doesn't exist
-      const completedDocument: string = `${user.list}Completed`;
-      let completedResult: DocumentType = await collection.findOne({
-        _id: completedDocument,
-      });
-      if (!completedResult) {
-        await collection.insertOne({
-          _id: completedDocument,
-          tasks: [],
-        });
-      }
-      const completedData = completedResult.tasks;
-      io.to(user.list).emit("show_completed_tasks", completedData);
+      socket.emit("show_pending_tasks", pendingResult.tasks);
+      socket.emit("show_completed_tasks", pendingResult.completed);
 
       // User joins list 'room'
       socket.join(user.list);
@@ -116,22 +106,26 @@ io.on("connect", (socket: Socket) => {
 
   socket.on("client_message", (task) => {
     // console.log("USERS ARRAY INSIDE", users);
-    const messageUser: TaskObjType | any = users.find(
+    const messageUser: UserType | undefined = users.find(
       (el) => el.user_id === socket.id
     );
-    const taskObj: TaskObjType = formatMessage(
-      messageUser.user_id,
-      messageUser.name,
-      messageUser.list,
-      task
-    );
+    const taskObj: TaskObjType = messageUser
+      ? formatMessage(
+          messageUser.user_id,
+          messageUser.name,
+          messageUser.list,
+          task
+        )
+      : undefined;
     try {
       // console.log("TASKOBJ:", taskObj);
-      collection.updateOne(
-        { _id: taskObj.list },
-        { $push: { tasks: taskObj } }
-      );
-      io.to(taskObj.list).emit("server_message", taskObj);
+      if (taskObj) {
+        collection.updateOne(
+          { _id: taskObj.list },
+          { $push: { tasks: taskObj } }
+        );
+        io.to(taskObj.list).emit("server_message", taskObj);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -139,13 +133,11 @@ io.on("connect", (socket: Socket) => {
 
   // REWORK THIS
   socket.on("pending_tasks", (pendingTasks) => {
-    const list = pendingTasks[0].list
+    console.log("Pending ping");
+    const list = pendingTasks[0].list;
     try {
       if (pendingTasks.length !== 0) {
-        collection.updateOne(
-          { _id: pendingTasks[0].list },
-          { $set: { tasks: pendingTasks } }
-        );
+        collection.updateOne({ _id: list }, { $set: { tasks: pendingTasks } });
         io.to(list).emit("update_pending", pendingTasks);
       }
     } catch (e) {
@@ -153,20 +145,19 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  socket.on("completed_tasks", (completedTasks) => {
-    const list = completedTasks[0].list
-    const listName = `${completedTasks[0].list}Complete`;
+  socket.on("completed_task", async (completedTask) => {
+    console.log("comp ping");
+    const list = completedTask.list;
     try {
-      if (completedTasks.length !== 0) {
-        collection.updateOne(
-          { _id: listName },
-          { $set: { tasks: completedTasks } }
-        );
-      }
-      io.to(list).emit(
-        "update_completed",
-        completedTasks
+      collection.updateOne(
+        { _id: list },
+        { $push: { completed: completedTask } }
       );
+
+      const data = await collection.findOne({ _id: list });
+      const completedTasks = data.completed;
+      console.log("COMPLETEKRLEKLKDD", completedTasks);
+      io.to(list).emit("update_completed", completedTasks);
     } catch (e) {
       console.error(e);
     }

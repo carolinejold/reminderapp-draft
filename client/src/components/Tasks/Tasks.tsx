@@ -12,7 +12,6 @@ const Tasks: React.FC = () => {
   useEffect(() => {
     socket.on("show_pending_tasks", (pendingData: Array<TaskObjType>) => {
       setPendingArr(pendingData);
-      console.log("PENDINGINGN ARRAYY:", pendingArr);
     });
 
     socket.on("show_completed_tasks", (completedData: Array<TaskObjType>) => {
@@ -20,7 +19,6 @@ const Tasks: React.FC = () => {
     });
 
     socket.on("server_message", (taskObj: TaskObjType) => {
-      // console.log("server message event received on frontend", taskObj);
       setPendingArr((pendingArr) => [...pendingArr, taskObj]);
     });
 
@@ -35,7 +33,7 @@ const Tasks: React.FC = () => {
 
   return (
     <div className="tasks-container">
-      <Pending pendingArr={pendingArr} />
+      <Pending pendingArr={pendingArr} setPendingArr={setPendingArr} />
       <p className="tasks-divider">- Completed Tasks -</p>
       <Complete completedArr={completedArr} />
     </div>
