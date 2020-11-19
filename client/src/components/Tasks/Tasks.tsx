@@ -26,8 +26,8 @@ const Tasks: React.FC = () => {
       setPendingArr(pendingTasks);
     });
 
-    socket.on("update_completed", (completedTasks: Array<TaskObjType>) => {
-      setCompletedArr(completedTasks);
+    socket.on("update_completed", (data: Array<TaskObjType>) => {
+      setCompletedArr(data);
     });
   }, []);
 

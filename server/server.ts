@@ -132,32 +132,39 @@ io.on("connect", (socket: Socket) => {
   });
 
   // REWORK THIS
-  socket.on("pending_tasks", (pendingTasks) => {
-    console.log("Pending ping");
-    const list = pendingTasks[0].list;
+  socket.on("pending_tasks", (pendingTasks, list) => {
+    // console.log("pending ping", pendingTasks);
     try {
-      if (pendingTasks.length !== 0) {
-        collection.updateOne({ _id: list }, { $set: { tasks: pendingTasks } });
-        io.to(list).emit("update_pending", pendingTasks);
-      }
+      //   console.log("if pending ping");
+      collection.updateOne({ _id: list }, { $set: { tasks: pendingTasks } });
+      io.to(list).emit("update_pending", pendingTasks);
     } catch (e) {
       console.error(e);
     }
   });
 
-  socket.on("completed_task", async (completedTask) => {
-    console.log("comp ping");
-    const list = completedTask.list;
+  socket.on("completed_task", async (completedTask, list) => {
     try {
       collection.updateOne(
         { _id: list },
         { $push: { completed: completedTask } }
       );
-
       const data = await collection.findOne({ _id: list });
       const completedTasks = data.completed;
-      console.log("COMPLETEKRLEKLKDD", completedTasks);
+      // console.log("COMPLETEKRLEKLKDD", completedTasks);
       io.to(list).emit("update_completed", completedTasks);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  socket.on("delete_task", async (updatedCompleted, list) => {
+    try {
+      collection.updateOne(
+        { _id: list },
+        { $push: { completed: updatedCompleted } }
+      );
+      io.to(list).emit("update_completed", updatedCompleted);
     } catch (e) {
       console.error(e);
     }
@@ -187,17 +194,5 @@ io.on("connect", (socket: Socket) => {
   //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
   //     socket.broadcast.emit("user_left", `ANOTHER USER is no longer online`);
   //   });
-  // });
-
-  // EVENT HANDLER: When client disconnects. must be inside io.on connect
-
-  // ROUTES
-  // app.get("/chat", async (req, res) => {
-  //   try {
-  //     let result = await collection.findOne({ _id: req.query.room });
-  //     res.send(result);
-  //   } catch (e) {
-  //     res.status(500).send({ message: e.message });
-  //   }
   // });
 });

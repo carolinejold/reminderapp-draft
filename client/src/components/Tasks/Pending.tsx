@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import { socket } from "../sockets/sockets";
 import { TaskObjType } from "../../types/types";
@@ -9,8 +8,8 @@ const Task: React.FC<{
   pendingArr: Array<TaskObjType>;
   setPendingArr: React.Dispatch<React.SetStateAction<TaskObjType[]>>;
 }> = ({ pendingArr }) => {
-  // TODO how can i make this more robust - message_id?
   const toggleTask = (id: string) => {
+    const list = pendingArr[0].list;
     const pendingTasks: Array<TaskObjType> = [];
     let completedTask: TaskObjType = {
       user_id: "",
@@ -48,8 +47,8 @@ const Task: React.FC<{
     });
     // const pendingTasks = pendingArr.filter(el => el.message_id !== id);
     // const completedTask = pendingArr.find((el) => el.message_id !== id);
-    socket.emit("pending_tasks", pendingTasks);
-    socket.emit("completed_task", completedTask);
+    socket.emit("pending_tasks", pendingTasks, list);
+    socket.emit("completed_task", completedTask, list);
   };
 
   return (
@@ -74,23 +73,6 @@ const Task: React.FC<{
                 Added by {el.name} on {el.date} at {el.time}
               </p>
             </small>
-            <div>
-              <Button
-                style={{
-                  margin: "1em 0em 0em 0em",
-                  backgroundColor: "white",
-                  width: "0.5em",
-                  height: "3em",
-                  fontSize: "0.7em",
-                }}
-                variant="outlined"
-                color="default"
-                // onClick={handleClick}
-              >
-                {/* {toggleExtra === true ? "Hide details" : "More details"} */}
-                Delete
-              </Button>
-            </div>
           </div>
         );
       })}

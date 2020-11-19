@@ -2,11 +2,19 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import { TaskObjType } from "../../types/types";
+import { socket } from "../sockets/sockets";
 import "./Complete.css";
 
 const Complete: React.FC<{ completedArr: Array<TaskObjType> }> = ({
   completedArr,
 }) => {
+  const handleDelete = (id: string) => {
+    const list = completedArr[0].list;
+    const updatedCompleted = completedArr.filter((el) => el.message_id !== id);
+    console.log("UPDAAATED COMPLEEEETED", updatedCompleted);
+    socket.emit("delete_task", updatedCompleted, list);
+  };
+
   return (
     <div className="completed-container">
       {completedArr.map((el) => {
@@ -40,7 +48,7 @@ const Complete: React.FC<{ completedArr: Array<TaskObjType> }> = ({
                 }}
                 variant="outlined"
                 color="default"
-                // onClick={handleClick}
+                onClick={() => handleDelete(el.message_id)}
               >
                 {/* {toggleExtra === true ? "Hide details" : "More details"} */}
                 Delete
