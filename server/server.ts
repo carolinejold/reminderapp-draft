@@ -6,15 +6,11 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-import * as mongo from "mongodb";
 const MongoClient = require("mongodb").MongoClient;
 import { Socket } from "socket.io";
 
-// const users = require("./utils/index.js").users;
 const { formatMessage, userJoin, users } = require("./utils");
 import { TaskObjType, UserType, DocumentType } from "./types/types";
-
-// const userJoin = require("./utils/index.js");
 
 const cors = require("cors");
 require("dotenv").config();
@@ -28,7 +24,7 @@ const dbName: string | undefined = process.env.DB_NAME;
 const uri: string = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 // TODO add client.close at some point?
 
-const client: mongo.MongoClient = new MongoClient(
+const client = new MongoClient(
   uri,
   { useUnifiedTopology: true },
   { useNewUrlParser: true }
