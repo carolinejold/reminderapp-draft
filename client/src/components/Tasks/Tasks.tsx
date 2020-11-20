@@ -5,7 +5,7 @@ import Complete from "./Complete";
 import { TaskObjType } from "../../types/types";
 import "./Tasks.css";
 
-const Tasks: React.FC = () => {
+const Tasks: React.FC<{ list: string | null }> = ({ list }) => {
   const [pendingArr, setPendingArr] = useState<Array<TaskObjType>>([]);
   const [completedArr, setCompletedArr] = useState<Array<TaskObjType>>([]);
 
@@ -33,9 +33,9 @@ const Tasks: React.FC = () => {
 
   return (
     <div className="tasks-container">
-      <Pending pendingArr={pendingArr} setPendingArr={setPendingArr} />
+      <Pending list={list} pendingArr={pendingArr} />
       <p className="tasks-divider">- Completed Tasks -</p>
-      <Complete completedArr={completedArr} />
+      <Complete list={list} completedArr={completedArr} />
     </div>
   );
 };

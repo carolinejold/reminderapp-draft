@@ -6,10 +6,9 @@ import "./Pending.css";
 
 const Task: React.FC<{
   pendingArr: Array<TaskObjType>;
-  setPendingArr: React.Dispatch<React.SetStateAction<TaskObjType[]>>;
-}> = ({ pendingArr }) => {
+  list: string | null;
+}> = ({ pendingArr, list }) => {
   const toggleTask = (id: string) => {
-    const list = pendingArr[0].list;
     const pendingTasks: Array<TaskObjType> = [];
     let completedTask: TaskObjType = {
       user_id: "",
@@ -47,6 +46,7 @@ const Task: React.FC<{
     });
     // const pendingTasks = pendingArr.filter(el => el.message_id !== id);
     // const completedTask = pendingArr.find((el) => el.message_id !== id);
+    console.log("LIIIIIIIIIIIIST", list);
     socket.emit("pending_tasks", pendingTasks, list);
     socket.emit("completed_task", completedTask, list);
   };

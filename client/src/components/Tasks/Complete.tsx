@@ -4,12 +4,14 @@ import Divider from "@material-ui/core/Divider";
 import { TaskObjType } from "../../types/types";
 import { socket } from "../sockets/sockets";
 import "./Complete.css";
+const { v4: uuidv4 } = require("uuid");
 
-const Complete: React.FC<{ completedArr: Array<TaskObjType> }> = ({
-  completedArr,
-}) => {
+
+const Complete: React.FC<{
+  completedArr: Array<TaskObjType>;
+  list: string | null;
+}> = ({ completedArr, list }) => {
   const handleDelete = (id: string) => {
-    const list = completedArr[0].list;
     const updatedCompleted = completedArr.filter((el) => el.message_id !== id);
     console.log("UPDAAATED COMPLEEEETED", updatedCompleted);
     socket.emit("delete_task", updatedCompleted, list);
@@ -20,7 +22,7 @@ const Complete: React.FC<{ completedArr: Array<TaskObjType> }> = ({
       {completedArr.map((el) => {
         return (
           <div
-            key={el.message_id}
+            key={uuidv4()}
             id={el.message_id}
             className="completed-div"
             style={{

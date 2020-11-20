@@ -1,8 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
-import { TaskObjType } from "../types/types.js";
-
-// const users = [];
+import { TaskObjType, UserType } from "../types/types.js";
 
 const formatMessage = (
   user_id: string,
@@ -22,12 +20,15 @@ const formatMessage = (
   };
 };
 
-// const userJoin = (user_id, name, room) => {
-//   const user = { user_id, name, room };
-//   users.push(user);
-//   return user;
-// };
+const users: Array<UserType> = [];
+const userJoin = (user_id: string, name: string, list: string): UserType => {
+  const user: UserType = {
+    user_id,
+    name,
+    list,
+  };
+  users.push(user);
+  return user;
+};
 
-module.exports = formatMessage;
-// module.exports = userJoin;
-// module.exports = users;
+module.exports = { formatMessage, userJoin, users };

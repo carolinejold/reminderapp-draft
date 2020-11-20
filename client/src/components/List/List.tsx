@@ -9,15 +9,18 @@ import Tasks from "../Tasks/Tasks";
 import { socket } from "../sockets/sockets";
 import { qsTypes } from "../../types/types";
 import "./List.css";
+const { v4: uuidv4 } = require("uuid");
 
 const List: React.FC = (): ReactElement => {
   const [welcomeMessage, setWelcomeMessage] = useState<string | null | any>("");
   const [userJoinedMessages, setUserJoinedMessages] = useState<Array<string>>(
     []
   );
+  const [list, setList] = useState<string | null>("");
 
   useEffect(() => {
     const { name, list }: qsTypes = qs.parse(window.location.search);
+    setList(list);
     console.log(name, list);
 
     socket.emit("new_user", { name, list });
@@ -48,7 +51,7 @@ const List: React.FC = (): ReactElement => {
         <p></p>
         <div>
           {userJoinedMessages.map((el) => (
-            <small key={el}>
+            <small key={uuidv4()}>
               {" "}
               <FiberManualRecordIcon
                 style={{ fontSize: "0.8em", color: "limegreen" }}
@@ -61,7 +64,7 @@ const List: React.FC = (): ReactElement => {
         <br></br>
         {/* <p>{disconnectMessage}</p> */}
         <Form />
-        <Tasks />
+        <Tasks list={list} />
         <br></br>
         <Link to={`/`}>
           <Button>Go back & choose another list</Button>

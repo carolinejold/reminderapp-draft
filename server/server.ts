@@ -11,7 +11,7 @@ const MongoClient = require("mongodb").MongoClient;
 import { Socket } from "socket.io";
 
 // const users = require("./utils/index.js").users;
-const formatMessage = require("./utils/index.ts");
+const { formatMessage, userJoin, users } = require("./utils");
 import { TaskObjType, UserType, DocumentType } from "./types/types";
 
 // const userJoin = require("./utils/index.js");
@@ -51,16 +51,16 @@ server.listen(port, async () => {
 });
 
 // Helper function
-const users: Array<UserType> = [];
-const userJoin = (user_id: string, name: string, list: string): UserType => {
-  const user: UserType = {
-    user_id,
-    name,
-    list,
-  };
-  users.push(user);
-  return user;
-};
+// const users: Array<UserType> = [];
+// const userJoin = (user_id: string, name: string, list: string): UserType => {
+//   const user: UserType = {
+//     user_id,
+//     name,
+//     list,
+//   };
+//   users.push(user);
+//   return user;
+// };
 
 // SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connect", (socket: Socket) => {
@@ -104,10 +104,10 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  socket.on("client_message", (task) => {
+  socket.on("client_message", (task: string) => {
     // console.log("USERS ARRAY INSIDE", users);
     const messageUser: UserType | undefined = users.find(
-      (el) => el.user_id === socket.id
+      (el: UserType) => el.user_id === socket.id
     );
     const taskObj: TaskObjType = messageUser
       ? formatMessage(
@@ -145,7 +145,7 @@ io.on("connect", (socket: Socket) => {
 
   socket.on("completed_task", async (completedTask, list) => {
     try {
-      collection.updateOne(
+      await collection.updateOne(
         { _id: list },
         { $push: { completed: completedTask } }
       );
