@@ -22,7 +22,6 @@ const dbPassword: string | undefined = process.env.DB_PASSWORD;
 const dbName: string | undefined = process.env.DB_NAME;
 
 const uri: string = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-// TODO add client.close at some point?
 
 const client = new MongoClient(
   uri,
@@ -38,29 +37,15 @@ server.listen(port, async () => {
   try {
     await client.connect();
     collection = client.db("remindersdb").collection("tasks");
-    // console.log(collection)
-
     console.log(`Server running on port ${port}`);
   } catch (e) {
     console.error("Unable to connect to MongoDB", e);
   }
 });
 
-// Helper function
-// const users: Array<UserType> = [];
-// const userJoin = (user_id: string, name: string, list: string): UserType => {
-//   const user: UserType = {
-//     user_id,
-//     name,
-//     list,
-//   };
-//   users.push(user);
-//   return user;
-// };
-
 // SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connect", (socket: Socket) => {
-  // console.log("CONNECTED TO SERVER", socket.id);
+  console.log("CONNECTED TO SERVER", socket.id);
   socket.on("new_user", async ({ name, list }) => {
     const user: UserType = userJoin(socket.id, name, list);
     try {
@@ -165,26 +150,6 @@ io.on("connect", (socket: Socket) => {
       console.error(e);
     }
   });
-
-  // socket.on("completed_tasks", async (data) => {
-  //   const roomName = `${data[0].room}Complete`;
-  //   let result = await collection.findOne({ _id: roomName });
-  //   // console.log("mongoDB find collection:", result);
-  //   if (!result) {
-  //     await collection.insertOne({ _id: roomName, tasks: data });
-  //   }
-  //   collection.updateMany({ _id: roomName }, { $set: { tasks: data } });
-  //   io.emit("update_completed", data);
-  // });
-
-  // socket.on("delete_task", (taskArr) => {
-  // somrhing between this:
-  // collection.remove({"_id": new mongodb.ObjectId(id)});
-  // and this:
-  // collection.remove({ _id: roomName }, { $set: { tasks: data } });
-
-  //   io.emit("deleted_task", taskArr);
-  // });
 
   //   io.on("disconnect", (socket) => {
   //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present

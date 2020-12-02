@@ -1,9 +1,13 @@
 import io from "socket.io-client";
-const server = "http://localhost:5000/";
+const server = "window.location.hostname";
+
+// http://localhost:5000/
+// "https://git.heroku.com/reminders-app-co.git"
 
 const socket = io(server, {
-  upgrade: false,
-  transports: ["websocket"],
+  transports: ["websockets"],
 });
 
 export { socket };
+
+//   upgrade: false,
