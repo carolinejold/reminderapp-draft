@@ -6,12 +6,12 @@ import { socket } from "../sockets/sockets";
 import "./Complete.css";
 const { v4: uuidv4 } = require("uuid");
 
-
 const Complete: React.FC<{
   completedArr: Array<TaskObjType>;
   list: string | null;
 }> = ({ completedArr, list }) => {
   const handleDelete = (id: string) => {
+    console.log("COMPLETED ARR", completedArr);
     const updatedCompleted = completedArr.filter((el) => el.message_id !== id);
     console.log("UPDAAATED COMPLEEEETED", updatedCompleted);
     socket.emit("delete_task", updatedCompleted, list);
@@ -26,7 +26,7 @@ const Complete: React.FC<{
             id={el.message_id}
             className="completed-div"
             style={{
-              textDecoration: el.completed ? "line-through" : "",
+              textDecoration: el.completed ? "line-through" : ","
             }}
             // onClick={() => toggleTask(i)}
           >

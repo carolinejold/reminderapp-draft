@@ -50,18 +50,6 @@ server.listen(port, async () => {
   }
 });
 
-// Helper function
-// const users: Array<UserType> = [];
-// const userJoin = (user_id: string, name: string, list: string): UserType => {
-//   const user: UserType = {
-//     user_id,
-//     name,
-//     list,
-//   };
-//   users.push(user);
-//   return user;
-// };
-
 // SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connect", (socket: Socket) => {
   // console.log("CONNECTED TO SERVER", socket.id);
@@ -162,7 +150,7 @@ io.on("connect", (socket: Socket) => {
     try {
       collection.updateOne(
         { _id: list },
-        { $push: { completed: updatedCompleted } }
+        { $set: { completed: updatedCompleted } }
       );
       io.to(list).emit("update_completed", updatedCompleted);
     } catch (e) {
@@ -186,9 +174,6 @@ io.on("connect", (socket: Socket) => {
   // collection.remove({"_id": new mongodb.ObjectId(id)});
   // and this:
   // collection.remove({ _id: roomName }, { $set: { tasks: data } });
-
-  //   io.emit("deleted_task", taskArr);
-  // });
 
   //   io.on("disconnect", (socket) => {
   //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
