@@ -10,11 +10,8 @@ import * as mongo from "mongodb";
 const MongoClient = require("mongodb").MongoClient;
 import { Socket } from "socket.io";
 
-// const users = require("./utils/index.js").users;
 const { formatMessage, userJoin, users } = require("./utils");
 import { TaskObjType, UserType, DocumentType } from "./types/types";
-
-// const userJoin = require("./utils/index.js");
 
 const cors = require("cors");
 require("dotenv").config();
@@ -26,7 +23,6 @@ const dbPassword: string | undefined = process.env.DB_PASSWORD;
 const dbName: string | undefined = process.env.DB_NAME;
 
 const uri: string = `mongodb+srv://${dbUsername}:${dbPassword}@remindersapp.vswsy.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-// TODO add client.close at some point?
 
 const client: mongo.MongoClient = new MongoClient(
   uri,
@@ -86,14 +82,12 @@ io.on("connect", (socket: Socket) => {
         `${user.name} joined the ${user.list} list!`
       );
 
-      // socket.activeRoom = room;
     } catch (e) {
       console.error(e);
     }
   });
 
   socket.on("client_message", (task: string) => {
-    // console.log("USERS ARRAY INSIDE", users);
     const messageUser: UserType | undefined = users.find(
       (el: UserType) => el.user_id === socket.id
     );
@@ -106,7 +100,6 @@ io.on("connect", (socket: Socket) => {
         )
       : undefined;
     try {
-      // console.log("TASKOBJ:", taskObj);
       if (taskObj) {
         collection.updateOne(
           { _id: taskObj.list },
@@ -119,11 +112,8 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  // REWORK THIS
   socket.on("pending_tasks", (pendingTasks, list) => {
-    // console.log("pending ping", pendingTasks);
     try {
-      //   console.log("if pending ping");
       collection.updateOne({ _id: list }, { $set: { tasks: pendingTasks } });
       io.to(list).emit("update_pending", pendingTasks);
     } catch (e) {
@@ -158,22 +148,6 @@ io.on("connect", (socket: Socket) => {
     }
   });
 
-  // socket.on("completed_tasks", async (data) => {
-  //   const roomName = `${data[0].room}Complete`;
-  //   let result = await collection.findOne({ _id: roomName });
-  //   // console.log("mongoDB find collection:", result);
-  //   if (!result) {
-  //     await collection.insertOne({ _id: roomName, tasks: data });
-  //   }
-  //   collection.updateMany({ _id: roomName }, { $set: { tasks: data } });
-  //   io.emit("update_completed", data);
-  // });
-
-  // socket.on("delete_task", (taskArr) => {
-  // somrhing between this:
-  // collection.remove({"_id": new mongodb.ObjectId(id)});
-  // and this:
-  // collection.remove({ _id: roomName }, { $set: { tasks: data } });
 
   //   io.on("disconnect", (socket) => {
   //     // TODO here: 1. Remove the user ID 2. Send message to the rest that the user is no longer present
