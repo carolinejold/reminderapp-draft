@@ -46,15 +46,11 @@ server.listen(port, async () => {
   }
 });
 
-// SOCKET.IO - WHEN CLIENT CONNECTS
 io.on("connect", (socket: Socket) => {
-  // console.log("CONNECTED TO SERVER", socket.id);
   socket.on("new_user", async ({ name, list }) => {
     const user: UserType = userJoin(socket.id, name, list);
     try {
-      // 1. Find pending tasks list from DB on new_user, create one if doesn't exist
       const pendingDocument: string = user.list;
-      // console.log('PENDING DOC', pendingDocument)
       let pendingResult: DocumentType = await collection.findOne({
         _id: pendingDocument,
       });
@@ -69,7 +65,6 @@ io.on("connect", (socket: Socket) => {
       socket.emit("show_pending_tasks", pendingResult.tasks);
       socket.emit("show_completed_tasks", pendingResult.completed);
 
-      // User joins list 'room'
       socket.join(user.list);
 
       socket.emit(
