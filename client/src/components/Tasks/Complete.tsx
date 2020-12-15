@@ -11,9 +11,7 @@ const Complete: React.FC<{
   list: string | null;
 }> = ({ completedArr, list }) => {
   const handleDelete = (id: string) => {
-    console.log("COMPLETED ARR", completedArr);
     const updatedCompleted = completedArr.filter((el) => el.message_id !== id);
-    console.log("UPDAAATED COMPLEEEETED", updatedCompleted);
     socket.emit("delete_task", updatedCompleted, list);
   };
 
@@ -52,7 +50,6 @@ const Complete: React.FC<{
                 color="default"
                 onClick={() => handleDelete(el.message_id)}
               >
-                {/* {toggleExtra === true ? "Hide details" : "More details"} */}
                 Delete
               </Button>
             </div>

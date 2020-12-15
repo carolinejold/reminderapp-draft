@@ -38,8 +38,6 @@ server.listen(port, async () => {
   try {
     await client.connect();
     collection = client.db("remindersdb").collection("tasks");
-    // console.log(collection)
-
     console.log(`Server running on port ${port}`);
   } catch (e) {
     console.error("Unable to connect to MongoDB", e);
@@ -124,7 +122,6 @@ io.on("connect", (socket: Socket) => {
       );
       const data = await collection.findOne({ _id: list });
       const completedTasks = data.completed;
-      // console.log("COMPLETEKRLEKLKDD", completedTasks);
       io.to(list).emit("update_completed", completedTasks);
     } catch (e) {
       console.error(e);

@@ -44,9 +44,6 @@ const Task: React.FC<{
         pendingTasks.push(el);
       }
     });
-    // const pendingTasks = pendingArr.filter(el => el.message_id !== id);
-    // const completedTask = pendingArr.find((el) => el.message_id !== id);
-    console.log("LIIIIIIIIIIIIST", list);
     socket.emit("pending_tasks", pendingTasks, list);
     socket.emit("completed_task", completedTask, list);
   };

@@ -19,7 +19,6 @@ const Form = () => {
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    // console.log("FORM.js - task before submitted:", task);
     socket.emit("client_message", task);
     setInputValue("");
   };
